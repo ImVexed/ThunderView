@@ -1,0 +1,21 @@
+{{ $name := (print .tankname "_1")}}
+{{ $value := 0 }}
+{{ range $i, $r := getCSV ";" "War-Thunder-Datamine/lang.vromfs.bin_u/lang/units.csv" }}
+	{{ if eq (index $r 0) $name}}
+		{{ $value = (index $r 1) }}
+	{{ end }}
+{{ end }}
+
+{{/*  If the tank name has "_iii_" somewhere in the name like the "leopard_i", it's usually capitalized in `units.csv`, 
+      so if we can't find it normally, fallback to it's preset name, which is always capitalized properly */}}
+{{ $presetname := (print .presetname "_1")}}
+
+{{ if not $value }}
+	{{ range $i, $r := getCSV ";" "War-Thunder-Datamine/lang.vromfs.bin_u/lang/units.csv" }}
+		{{ if eq (index $r 0) $presetname}}
+			{{ $value = (index $r 1) }}
+		{{ end }}
+	{{ end }}
+{{ end }}
+
+{{ return $value }}

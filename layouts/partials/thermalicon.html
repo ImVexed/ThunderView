@@ -1,0 +1,27 @@
+<div style="height: 30px; width: 30px; background-color: {{- cond .isThermal `white` `green`}}; text-align: center;">
+	{{- if .isThermal }}
+		{{- if eq (len (intersect .resolution (slice 500 300))) 2}}
+		1
+		{{- end }}
+		{{- if eq (len (intersect .resolution (slice 800 600))) 2}}
+		2
+		{{- end }}
+		{{- if eq (len (intersect .resolution (slice 1024 768))) 2}}
+		2+
+		{{- end }}
+		{{- if eq (len (intersect .resolution (slice 1200 800))) 2}}
+		3
+		{{- end }}
+	{{- end }}
+	{{- if not .isThermal }}
+		{{- if eq (len (intersect .resolution (slice 800 600))) 2}}
+		1
+		{{- end }}
+		{{- if eq (len (intersect .resolution (slice 1200 800))) 2}}
+		1+
+		{{- end }}
+		{{- if eq (len (intersect .resolution (slice 1600 1200))) 2}}
+		2
+		{{- end }}
+	{{- end }}
+</div>

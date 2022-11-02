@@ -1,0 +1,14 @@
+baseURL = 'http://example.org/'
+languageCode = 'en-us'
+title = 'ThunderView'
+theme = "risotto"
+enableInlineShortcodes = true
+
+# zmv -n '(**/)(*).blkx' '$1$2.json' | bash
+
+[mediaTypes]
+  [mediaTypes.'application/json']
+    suffixes = ['blkx']
+  
+[markup.goldmark.renderer]
+  unsafe= true

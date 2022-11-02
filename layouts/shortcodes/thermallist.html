@@ -1,0 +1,41 @@
+{{$prefix := .Get "nation"}}
+<table
+	style="background: #141e24; min-width: max-content;"
+>
+	<tr>
+	  <th>Tank</th>
+	  <th>Gunner</th>
+	  <th>Commander</th>
+	  <th>Driver</th> 
+	</tr>
+{{- range $i, $val := $.Site.Data.gamedata.units.tankmodels }}
+	{{- if hasPrefix $i $prefix }}
+		{{- if .modifications.night_vision_system }}
+			{{- $name := partial "tankname.html" (dict "context" . "tankname" $i "presetname" (strings.TrimSuffix "_default" .weapon_presets.preset.name)) }}
+			{{- if $name }} {{/*  If we couldn't find the tank's human readable name translations in `units.csv` chances are it doesn't actually exist in game  */}}
+				<tr>
+					<td>{{- $name -}}</td>
+					{{- if .modifications.night_vision_system.effects.nightVision.gunnerThermal }} <!-- Gunner  -->
+						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" true "resolution" (.modifications.night_vision_system.effects.nightVision.gunnerThermal.resolution)) -}} </td>
+					{{- end }}
+					{{- if .modifications.night_vision_system.effects.nightVision.gunnerIr }}
+						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" false "resolution" (.modifications.night_vision_system.effects.nightVision.gunnerIr.resolution)) -}} </td>
+					{{- end }}
+					{{- if .modifications.night_vision_system.effects.nightVision.commanderViewThermal }} <!-- Commander  -->
+						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" true "resolution" (.modifications.night_vision_system.effects.nightVision.commanderViewThermal.resolution)) -}} </td>
+					{{- end }}
+					{{- if .modifications.night_vision_system.effects.nightVision.commanderViewIr }}
+						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" false "resolution" (.modifications.night_vision_system.effects.nightVision.commanderViewIr.resolution)) -}} </td>
+					{{- end }}
+					{{- if .modifications.night_vision_system.effects.nightVision.driverThermal }} <!-- Driver  -->
+						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" false "resolution" (.modifications.night_vision_system.effects.nightVision.driverThermal.resolution)) -}} </td>
+					{{- end }}
+					{{- if .modifications.night_vision_system.effects.nightVision.driverIr }}
+						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" false "resolution" (.modifications.night_vision_system.effects.nightVision.driverIr.resolution)) -}} </td>
+					{{- end }}
+				</tr>
+			{{- end }}
+		{{- end }}
+	{{- end }}
+{{- end }}
+</table>
