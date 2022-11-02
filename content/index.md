@@ -6,6 +6,6 @@ draft: false
 
 
 
-<img src="/flags/gb.svg" width="50"> UK |  <img src="/flags/us.svg" width="50">  USA | <img src="/flags/de.svg" width="50">  Germany
+<img src="flags/gb.svg" width="50"> UK |  <img src="flags/us.svg" width="50">  USA | <img src="flags/de.svg" width="50">  Germany
 :------------------------------:|:------------------------------:|:------------------------------:
 {{<thermallist nation="uk_">}}  |  {{<thermallist nation="us_">}}|{{<thermallist nation="germ_">}}
