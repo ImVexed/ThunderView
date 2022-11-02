@@ -1,0 +1,43 @@
+name: Update Datamine
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install zsh
+        run: sudo apt-get update; sudo apt-get install zsh
+
+      - name: Fetch and process Datamine
+        shell: zsh {0}
+        run: |
+          git clone --depth=1 https://github.com/gszabi99/War-Thunder-Datamine  
+          mv War-Thunder-Datamine/aces.vromfs.bin_u/gamedata data/
+          cd data/
+          autoload zmv
+          zmv -n '(**/)(*).blkx' '$1$2.json' | bash 
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.105.0'
+          extended: true
+
+      - name: Build
+        run: hugo --minify
+        
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
