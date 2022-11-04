@@ -1,4 +1,4 @@
-<div style="height: 30px; width: 30px; background-color: {{- cond .isThermal `white` `green`}}; text-align: center;">
+<div style="height: 30px; width: 30px; background-color: {{- cond .isThermal `white` `green`}}; color: {{- cond .isThermal `black` `white`}}; text-align: center;">
 	{{- if .isThermal }}
 		{{- if eq (len (intersect .resolution (slice 500 300))) 2}}
 		1
