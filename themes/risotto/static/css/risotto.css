@@ -10,3 +10,10 @@ body {
     background-color: var(--bg);
     color: var(--fg);
 }
+
+table tr:nth-child(odd) td{
+    background-color: #1e2c35
+}
+table tr:nth-child(even) td{
+    background-color: #141E24;
+}

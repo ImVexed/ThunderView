@@ -14,7 +14,24 @@
 			{{- $name := partial "tankname.html" (dict "context" . "tankname" $i "presetname" (strings.TrimSuffix "_default" .weapon_presets.preset.name)) }}
 			{{- if $name }} {{/*  If we couldn't find the tank's human readable name translations in `units.csv` chances are it doesn't actually exist in game  */}}
 				<tr>
-					<td>{{- $name -}}</td>
+					<td style="text-align: left; padding-left:2%; padding-right:4% ;position:relative;width:20rem;">
+						{{- $name -}}
+						{{- if eq .type "typeTankDestroyer" }}
+							<img style="width:15px;transform: translateY(-50%);top: 50%;right: 0%;position:absolute;" src="destroyer_tank.svg">
+						{{- end}}
+						{{- if eq .type "typeMediumTank" }}
+							<img style="width:15px;transform: translateY(-50%);top: 50%;right: 0%;position:absolute;" src="medium_tank.svg">
+						{{- end}}
+						{{- if eq .type "typeHeavyTank" }}
+							<img style="width:15px;transform: translateY(-50%);top: 50%;right: 0%;position:absolute;" src="heavy_tank.svg">
+						{{- end}}
+						{{- if eq .type "typeLightTank" }}
+							<img style="width:15px;transform: translateY(-50%);top: 50%;right: 0%;position:absolute;" src="light_tank.svg">
+						{{- end}}
+						{{- if eq .type "typeSPAA" }}
+							<img style="width:15px;transform: translateY(-50%);top: 50%;right: 0%;position:absolute;" src="spaa_tank.svg">
+						{{- end}}
+					</td>
 					{{- if .modifications.night_vision_system.effects.nightVision.gunnerThermal }} <!-- Gunner  -->
 						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" true "resolution" (.modifications.night_vision_system.effects.nightVision.gunnerThermal.resolution)) -}} </td>
 					{{- end }}
