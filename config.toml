@@ -3,6 +3,7 @@ languageCode = 'en-us'
 title = 'ThunderView'
 theme = "risotto"
 enableInlineShortcodes = true
+timeout = "90s"
 
 # zmv -n '(**/)(*).blkx' '$1$2.json' | bash
 
