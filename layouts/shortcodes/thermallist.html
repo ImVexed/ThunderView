@@ -72,7 +72,7 @@
 				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" (.val.modifications.night_vision_system.effects.nightVision.commanderViewIr.resolution)) -}} </td>
 			{{- end }}
 			{{- if .val.modifications.night_vision_system.effects.nightVision.driverThermal }} <!-- Driver  -->
-				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" (.val.modifications.night_vision_system.effects.nightVision.driverThermal.resolution)) -}} </td>
+				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" (.val.modifications.night_vision_system.effects.nightVision.driverThermal.resolution)) -}} </td>
 			{{- end }}
 			{{- if .val.modifications.night_vision_system.effects.nightVision.driverIr }}
 				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" (.val.modifications.night_vision_system.effects.nightVision.driverIr.resolution)) -}} </td>
