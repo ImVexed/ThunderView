@@ -39,7 +39,7 @@
 			<td style="text-align: left; padding-left:2%; padding-right:4% ;position:relative;width:20rem;">
 				{{- $name -}}
 			</td>
-			<td>
+			<td style="vertical-align:middle;">
 				{{- if eq .val.type "typeTankDestroyer" }}
 					<img style="width:20px;" src="destroyer_tank.svg">
 				{{- end}}
@@ -56,7 +56,7 @@
 					<img style="width:20px;" src="spaa_tank.svg">
 				{{- end}}
 			</td>
-			<td style="width: 3rem;">
+			<td style="width:3rem;vertical-align:middle;">
 				{{- .br}}
 			</td>
 			{{- if .val.modifications.night_vision_system.effects.nightVision.gunnerThermal }} <!-- Gunner  -->
