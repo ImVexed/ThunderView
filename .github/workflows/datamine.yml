@@ -1,4 +1,3 @@
-runs-on: self-hosted
 name: Update Datamine
 
 on:
@@ -10,6 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
+  runs-on: self-hosted
   build:
     runs-on: ubuntu-latest
     steps:
