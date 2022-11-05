@@ -7,3 +7,4 @@ To seed data:
 > cd data  
 > zmv -n '(**/)(*).blkx' '$1$2.json' | bash  
 > cd ..  
+> hugo server  
