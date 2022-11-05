@@ -5,8 +5,6 @@ theme = "risotto"
 enableInlineShortcodes = true
 timeout = "90s"
 
-# zmv -n '(**/)(*).blkx' '$1$2.json' | bash
-
 [mediaTypes]
   [mediaTypes.'application/json']
     suffixes = ['blkx']

@@ -1,58 +1,83 @@
-{{$prefix := .Get "nation"}}
-<table
-	style="background: #141e24; min-width: max-content;"
->
+{{- $prefix := .Get "nation"}}
+{{- $entries := slice}}
+{{- range $i, $val := $.Site.Data.gamedata.units.tankmodels }}
+	{{- if hasPrefix $i $prefix }}
+		{{- if .modifications.night_vision_system }}
+			{{- $cost := 0 }}
+			{{- $presetname := (strings.TrimSuffix "_default" $val.weapon_presets.preset.name) }}
+
+			{{- if (index $.Site.Data.config.wpcost $i)}}
+				{{- $cost = (index $.Site.Data.config.wpcost $i).economicRankHistorical}}
+			{{- end }}
+			{{- if (index $.Site.Data.config.wpcost $presetname)}}
+				{{- $cost = (index $.Site.Data.config.wpcost $presetname).economicRankHistorical}}
+			{{- end }}
+
+			{{- if $cost }}
+				{{- $ratio := math.Pow 10.0 1.0}}
+				{{- $realcost := add (div (float $cost ) 3.0) 1.0}}
+				{{- $br := (div (math.Round (mul $realcost $ratio )) $ratio)}}
+				{{- $entries = $entries | append (dict "i" $i "val" $val "br" $br)}}
+			{{ end }}
+		{{- end }}
+	{{- end }}
+{{- end }}
+
+<table style="background: #141e24; min-width: max-content;">
 	<tr>
 	  <th>Tank</th>
+	  <th></th>
+	  <th>BR</th>
 	  <th><img style="width:25px;" src="gunner.svg"></th>
 	  <th><img style="width:25px;" src="commander.svg"></th>
 	  <th><img style="width:25px;" src="driver.svg"></th> 
 	</tr>
-{{- range $i, $val := $.Site.Data.gamedata.units.tankmodels }}
-	{{- if hasPrefix $i $prefix }}
-		{{- if .modifications.night_vision_system }}
-			{{- $name := partial "tankname.html" (dict "context" . "tankname" $i "presetname" (strings.TrimSuffix "_default" .weapon_presets.preset.name)) }}
-			{{- if $name }} {{/*  If we couldn't find the tank's human readable name translations in `units.csv` chances are it doesn't actually exist in game  */}}
-				<tr>
-					<td style="text-align: left; padding-left:2%; padding-right:4% ;position:relative;width:20rem;">
-						{{- $name -}}
-						{{- if eq .type "typeTankDestroyer" }}
-							<img style="width:20px;transform: translateY(-50%);top: 50%;right: 0%;position:absolute;" src="destroyer_tank.svg">
-						{{- end}}
-						{{- if eq .type "typeMediumTank" }}
-							<img style="width:20px;transform: translateY(-50%);top: 50%;right: 0%;position:absolute;" src="medium_tank.svg">
-						{{- end}}
-						{{- if eq .type "typeHeavyTank" }}
-							<img style="width:20px;transform: translateY(-50%);top: 50%;right: 0%;position:absolute;" src="heavy_tank.svg">
-						{{- end}}
-						{{- if eq .type "typeLightTank" }}
-							<img style="width:20px;transform: translateY(-50%);top: 50%;right: 0%;position:absolute;" src="light_tank.svg">
-						{{- end}}
-						{{- if eq .type "typeSPAA" }}
-							<img style="width:20px;transform: translateY(-50%);top: 50%;right: 0%;position:absolute;" src="spaa_tank.svg">
-						{{- end}}
-					</td>
-					{{- if .modifications.night_vision_system.effects.nightVision.gunnerThermal }} <!-- Gunner  -->
-						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" true "resolution" (.modifications.night_vision_system.effects.nightVision.gunnerThermal.resolution)) -}} </td>
-					{{- end }}
-					{{- if .modifications.night_vision_system.effects.nightVision.gunnerIr }}
-						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" false "resolution" (.modifications.night_vision_system.effects.nightVision.gunnerIr.resolution)) -}} </td>
-					{{- end }}
-					{{- if .modifications.night_vision_system.effects.nightVision.commanderViewThermal }} <!-- Commander  -->
-						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" true "resolution" (.modifications.night_vision_system.effects.nightVision.commanderViewThermal.resolution)) -}} </td>
-					{{- end }}
-					{{- if .modifications.night_vision_system.effects.nightVision.commanderViewIr }}
-						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" false "resolution" (.modifications.night_vision_system.effects.nightVision.commanderViewIr.resolution)) -}} </td>
-					{{- end }}
-					{{- if .modifications.night_vision_system.effects.nightVision.driverThermal }} <!-- Driver  -->
-						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" false "resolution" (.modifications.night_vision_system.effects.nightVision.driverThermal.resolution)) -}} </td>
-					{{- end }}
-					{{- if .modifications.night_vision_system.effects.nightVision.driverIr }}
-						<td>{{- partial "thermalicon.html" (dict "context" . "isThermal" false "resolution" (.modifications.night_vision_system.effects.nightVision.driverIr.resolution)) -}} </td>
-					{{- end }}
-				</tr>
+{{- range sort $entries "br" "desc" }}
+	{{- $name := partial "tankname.html" (dict "tankname" .i "presetname" (strings.TrimSuffix "_default" .val.weapon_presets.preset.name)) }}
+	{{- if $name }} {{/*  If we couldn't find the tank's human readable name translations in `units.csv` chances are it doesn't actually exist in game  */}}
+		<tr>
+			<td style="text-align: left; padding-left:2%; padding-right:4% ;position:relative;width:20rem;">
+				{{- $name -}}
+			</td>
+			<td>
+				{{- if eq .val.type "typeTankDestroyer" }}
+					<img style="width:20px;" src="destroyer_tank.svg">
+				{{- end}}
+				{{- if eq .val.type "typeMediumTank" }}
+					<img style="width:20px;" src="medium_tank.svg">
+				{{- end}}
+				{{- if eq .val.type "typeHeavyTank" }}
+					<img style="width:20px;" src="heavy_tank.svg">
+				{{- end}}
+				{{- if eq .val.type "typeLightTank" }}
+					<img style="width:20px;" src="light_tank.svg">
+				{{- end}}
+				{{- if eq .val.type "typeSPAA" }}
+					<img style="width:20px;" src="spaa_tank.svg">
+				{{- end}}
+			</td>
+			<td style="width: 3rem;">
+				{{- .br}}
+			</td>
+			{{- if .val.modifications.night_vision_system.effects.nightVision.gunnerThermal }} <!-- Gunner  -->
+				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" (.val.modifications.night_vision_system.effects.nightVision.gunnerThermal.resolution)) -}} </td>
 			{{- end }}
-		{{- end }}
+			{{- if .val.modifications.night_vision_system.effects.nightVision.gunnerIr }}
+				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" (.val.modifications.night_vision_system.effects.nightVision.gunnerIr.resolution)) -}} </td>
+			{{- end }}
+			{{- if .val.modifications.night_vision_system.effects.nightVision.commanderViewThermal }} <!-- Commander  -->
+				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" (.val.modifications.night_vision_system.effects.nightVision.commanderViewThermal.resolution)) -}} </td>
+			{{- end }}
+			{{- if .val.modifications.night_vision_system.effects.nightVision.commanderViewIr }}
+				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" (.val.modifications.night_vision_system.effects.nightVision.commanderViewIr.resolution)) -}} </td>
+			{{- end }}
+			{{- if .val.modifications.night_vision_system.effects.nightVision.driverThermal }} <!-- Driver  -->
+				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" (.val.modifications.night_vision_system.effects.nightVision.driverThermal.resolution)) -}} </td>
+			{{- end }}
+			{{- if .val.modifications.night_vision_system.effects.nightVision.driverIr }}
+				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" (.val.modifications.night_vision_system.effects.nightVision.driverIr.resolution)) -}} </td>
+			{{- end }}
+		</tr>
 	{{- end }}
 {{- end }}
 </table>
