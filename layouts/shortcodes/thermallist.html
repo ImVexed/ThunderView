@@ -27,7 +27,7 @@
 	<tr>
 	  <th>Tank</th>
 	  <th></th>
-	  <th>BR</th>
+	  <th style="vertical-align:middle;">BR</th>
 	  <th><img style="width:25px;" src="gunner.svg"></th>
 	  <th><img style="width:25px;" src="commander.svg"></th>
 	  <th><img style="width:25px;" src="driver.svg"></th> 
@@ -36,7 +36,7 @@
 	{{- $name := partial "tankname.html" (dict "tankname" .i "presetname" (strings.TrimSuffix "_default" .val.weapon_presets.preset.name)) }}
 	{{- if $name }} {{/*  If we couldn't find the tank's human readable name translations in `units.csv` chances are it doesn't actually exist in game  */}}
 		<tr>
-			<td style="text-align: left; padding-left:2%; padding-right:4% ;position:relative;width:20rem;">
+			<td style="text-align: left; padding-left:2%; padding-right:4% ;position:relative;width:20rem;vertical-align:middle;">
 				{{- $name -}}
 			</td>
 			<td style="vertical-align:middle;">
