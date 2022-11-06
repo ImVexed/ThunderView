@@ -1,6 +1,6 @@
 baseURL = '/'
 languageCode = 'en-us'
-title = 'ThunderView'
+title = 'Thunder View'
 theme = "risotto"
 enableInlineShortcodes = true
 timeout = "90s"
