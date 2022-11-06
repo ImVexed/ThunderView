@@ -1,4 +1,4 @@
-baseURL = '/'
+baseURL = 'https://thunderview.net/'
 languageCode = 'en-us'
 title = 'Thunder View'
 theme = "risotto"
