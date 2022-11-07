@@ -11,10 +11,10 @@ body {
     color: var(--fg);
 }
 
-table tr:nth-child(odd) td{
+.thermal tr:nth-child(odd) td{
     background-color: #1e2c35
 }
-table tr:nth-child(even) td{
+.thermal tr:nth-child(even) td{
     background-color: #141E24;
 }
 /* CSS */
