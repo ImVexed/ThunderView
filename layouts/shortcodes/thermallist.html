@@ -28,9 +28,9 @@
 	  <th>Tank</th>
 	  <th></th>
 	  <th style="vertical-align:middle;">BR</th>
-	  <th><img style="width:25px;" src="/gunner.svg"></th>
-	  <th><img style="width:25px;" src="/commander.svg"></th>
-	  <th><img style="width:25px;" src="/driver.svg"></th> 
+	  <th><img style="width:1.5rem;" src="/gunner.svg"></th>
+	  <th><img style="width:1.5rem;" src="/commander.svg"></th>
+	  <th><img style="width:1.5rem;" src="/driver.svg"></th> 
 	</tr>
 {{- range sort $entries "br" "desc" }}
 	{{- $name := partial "tankname.html" (dict "tankname" .i "presetname" (strings.TrimSuffix "_default" .val.weapon_presets.preset.name)) }}
@@ -41,19 +41,19 @@
 			</td>
 			<td style="vertical-align:middle;">
 				{{- if eq .val.type "typeTankDestroyer" }}
-					<img style="width:20px;" src="/destroyer_tank.svg">
+					<img style="width:1.2rem;" src="/destroyer_tank.svg">
 				{{- end}}
 				{{- if eq .val.type "typeMediumTank" }}
-					<img style="width:20px;" src="/medium_tank.svg">
+					<img style="width:1.2rem;" src="/medium_tank.svg">
 				{{- end}}
 				{{- if eq .val.type "typeHeavyTank" }}
-					<img style="width:20px;" src="/heavy_tank.svg">
+					<img style="width:1.2rem;" src="/heavy_tank.svg">
 				{{- end}}
 				{{- if eq .val.type "typeLightTank" }}
-					<img style="width:20px;" src="/light_tank.svg">
+					<img style="width:1.2rem;" src="/light_tank.svg">
 				{{- end}}
 				{{- if eq .val.type "typeSPAA" }}
-					<img style="width:20px;" src="/spaa_tank.svg">
+					<img style="width:1.2rem;" src="/spaa_tank.svg">
 				{{- end}}
 			</td>
 			<td style="width:3rem;vertical-align:middle;">
