@@ -1,0 +1,66 @@
+<h1>Legend</h1> 
+<div style="display: flex; gap:1rem;">
+	<div style="display: flex; flex-direction:column; gap:0.5rem;">
+		<h2>Thermal Generations</h2>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			{{- partial "thermalicon.html" (dict "isThermal" true "resolution" (slice 500 300)) -}}
+			500x300
+		</div>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			{{- partial "thermalicon.html" (dict "isThermal" true "resolution" (slice 800 600)) -}}
+			800x600
+		</div>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			{{- partial "thermalicon.html" (dict "isThermal" true "resolution" (slice 1024 768)) -}}
+			1024x768
+		</div>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			{{- partial "thermalicon.html" (dict "isThermal" true "resolution" (slice 1200 800)) -}}
+			1200x800
+		</div>
+	</div>
+	<div style="display: flex; flex-direction:column; gap:0.5rem;">
+		<h2>Night Vision Generations</h2>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			{{- partial "thermalicon.html" (dict "isThermal" false "resolution" (slice 800 600)) -}}
+			800x600
+		</div>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			{{- partial "thermalicon.html" (dict "isThermal" false "resolution" (slice 1200 800)) -}}
+			1200x800
+		</div>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			{{- partial "thermalicon.html" (dict "isThermal" false "resolution" (slice 1600 1200)) -}}
+			1600x1200
+		</div>
+	</div>
+	<div style="display: flex; flex-direction:column; gap:0.5rem;">
+		<h2>Icons</h2>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			<img style="width:25px;" src="/gunner.svg">  Gunner
+		</div>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			<img style="width:25px;" src="/commander.svg"> Commander
+		</div>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			<img style="width:25px;" src="/driver.svg"> Driver
+		</div>
+	</div>
+	<div style="display: flex; flex-direction:column; gap:0.2rem;padding-top:2rem;">
+		<div style="display: flex; gap:1rem; align-items:center;">
+			<img style="width:25px;" src="/destroyer_tank.svg"> Tank Destroyer
+		</div>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			<img style="width:25px;" src="/medium_tank.svg"> Medium 
+		</div>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			<img style="width:25px;" src="/heavy_tank.svg"> Heavy
+		</div>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			<img style="width:25px;" src="/light_tank.svg"> Light
+		</div>
+		<div style="display: flex; gap:1rem; align-items:center;">
+			<img style="width:25px;" src="/spaa_tank.svg"> SPAA
+		</div>
+	</div>
+</div>
