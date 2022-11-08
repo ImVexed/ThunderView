@@ -1,0 +1,2 @@
+{{- $equiv := (index $.Site.Data.gamedata.damage_model.explosive.explosiveTypes .type)}}
+{{- return (mul $equiv .mass)}}

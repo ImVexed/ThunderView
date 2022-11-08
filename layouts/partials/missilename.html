@@ -1,0 +1,9 @@
+{{ $name := (print .missilename)}}
+{{ $value := 0 }}
+{{ range $i, $r := getCSV ";" "War-Thunder-Datamine/lang.vromfs.bin_u/lang/units_weaponry.csv" }}
+	{{ if eq (index $r 0) $name}}
+		{{ $value = (index $r 1) }}
+	{{ end }}
+{{ end }}
+
+{{ return $value }}

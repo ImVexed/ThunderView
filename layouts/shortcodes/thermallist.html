@@ -14,9 +14,8 @@
 			{{- end }}
 
 			{{- if $cost }}
-				{{- $ratio := math.Pow 10.0 1.0}}
 				{{- $realcost := add (div (float $cost ) 3.0) 1.0}}
-				{{- $br := (div (math.Round (mul $realcost $ratio )) $ratio)}}
+				{{- $br := partial "round.html" (dict "num" $realcost "power" 1 )}}
 				{{- $entries = $entries | append (dict "i" $i "val" $val "br" $br)}}
 			{{ end }}
 		{{- end }}
