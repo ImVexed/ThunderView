@@ -1,7 +1,7 @@
 {{- $prefix := .Get "nation"}}
 {{- $entries := slice}}
 {{- range $i, $val := $.Site.Data.gamedata.units.tankmodels }}
-	{{- if hasPrefix $i $prefix }}
+	{{- if and (and (hasPrefix $i $prefix) (not (in $i "_race"))) (not (in $i "_cup"))}}
 		{{- if .modifications.night_vision_system }}
 			{{- $cost := 0 }}
 			{{- $presetname := (strings.TrimSuffix "_default" $val.weapon_presets.preset.name) }}
