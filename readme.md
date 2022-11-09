@@ -1,4 +1,5 @@
 # Thunderview
+A War Thunder data mine visualization project  
 
 To seed data:
 
