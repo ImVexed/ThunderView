@@ -1,6 +1,8 @@
+{{- $version := os.ReadFile "/War-Thunder-Datamine/aces.vromfs.bin_u/version" }}
+
 <span style="position: absolute;
 right: 1rem;
 top: 1rem;">
-	Version:&nbsp; {{- os.ReadFile "/War-Thunder-Datamine/aces.vromfs.bin_u/version" }}
+	War Thunder Version: <a href="https://github.com/gszabi99/War-Thunder-Datamine/tree/{{$version}}" target="_blank">{{- $version }}</a>
 	Last Updated:&nbsp; {{- upper (now.Format "15:04 MST 2/Jan/2006") }}
 </span>
