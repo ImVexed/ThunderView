@@ -36,7 +36,7 @@
 	{{- if $name }} {{/*  If we couldn't find the tank's human readable name translations in `units.csv` chances are it doesn't actually exist in game  */}}
 		<tr>
 			<td style="text-align: left; padding-left:2%; padding-right:4% ;position:relative;width:12rem;vertical-align:middle;text-overflow: ellipsis;overflow:hidden;white-space: nowrap;">
-				{{- $name -}}
+				<a href="https://wiki.warthunder.com/{{- $name}}" target="_blank">{{- strings.Replace $name " " "_" -1 -}}</a>
 			</td>
 			<td style="vertical-align:middle;">
 				{{- if eq .val.type "typeTankDestroyer" }}
