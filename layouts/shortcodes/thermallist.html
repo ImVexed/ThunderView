@@ -59,6 +59,11 @@
 				{{- .br}}
 			</td>
 			{{- $nvs := .val.modifications.night_vision_system}}
+			{{- range $i, $val := .val.modifications }}
+				{{- if strings.Contains $i "upgrade_modification" }}
+					{{- $nvs = $val }}
+				{{- end }}
+			{{- end }}
 			{{- if .val.modifications.night_vision_system_upgrade_nv_to_thermal }}
 				{{- $nvs = .val.modifications.night_vision_system_upgrade_nv_to_thermal }}
 			{{- end }}
