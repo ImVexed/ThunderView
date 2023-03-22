@@ -1,0 +1,129 @@
+{{- $entries := slice}}
+{{- range $i, $val := $.Site.Data.gamedata.units.tankmodels }}
+	{{- if and (not (in $i "_race")) (not (in $i "_cup"))}}
+		{{- if and (eq .type "typeSPAA") (.sensors) }}
+			{{- $cost := 0 }}
+			{{- $presetname := (strings.TrimSuffix "_default" $val.weapon_presets.preset.name) }}
+
+			{{- if (index $.Site.Data.config.wpcost $i)}}
+				{{- $cost = (index $.Site.Data.config.wpcost $i).economicRankHistorical}}
+			{{- end }}
+			{{- if (index $.Site.Data.config.wpcost $presetname)}}
+				{{- $cost = (index $.Site.Data.config.wpcost $presetname).economicRankHistorical}}
+			{{- end }}
+
+			{{- if $cost }}
+				{{- $realcost := add (div (float $cost ) 3.0) 1.0}}
+				{{- $br := partial "round.html" (dict "num" $realcost "power" 1 )}}
+				{{- $entries = $entries | append (dict "i" $i "val" $val "br" $br)}}
+			{{ end }}
+
+		{{- end }}
+	{{- end }}
+{{- end }}
+
+<table class="thermal" style="background: #141e24; min-width: max-content;margin: 0.3rem;">
+	<tr>
+	  <th>Vehicle</th>
+	  <th>BR</th>
+	  <th>Search Range </th>
+	  <th>Search Zone</th>
+	  <th>Search Speed</th>
+	  <th>Tracking Range</th>
+	  <th>Tracking Power</th>
+	  <th>IRST Range</th>
+	</tr>
+	{{- range sort $entries "br" "desc" }}
+		{{- $name := partial "tankname.html" (dict "tankname" .i "presetname" (strings.TrimSuffix "_default" .val.weapon_presets.preset.name)) }}
+		{{- if $name }}
+			{{- $searchRadar := .val.sensors }}
+			{{- $commonRadar := .val.sensors }}
+			{{- $trackRadar := .val.sensors }}
+			{{- $irstTrack := .val.sensors }}
+
+			{{- $sensorName := "" }}
+			{{ $type := (printf "%T" .val.sensors.sensor) }}
+
+			{{- $sensors := .val.sensors.sensor }}
+
+			{{- if not (eq $type "[]interface {}") }}
+				{{- $sensors = slice $sensors }}
+			{{- end }}
+
+			{{- range $sensor := $sensors }}
+				{{- $sensorName = (strings.TrimPrefix "gameData/sensors/" (strings.TrimSuffix ".blk" $sensor.blk)) }}
+
+				{{- $sensorData := (index $.Site.Data.gamedata.sensors $sensorName) }}
+
+				{{- if $sensorData }}
+					{{- if $sensorData.transivers.search}}
+						{{- $searchRadar = $sensorData }}
+					{{- end }}
+					{{- if $sensorData.transivers.common}}
+						{{- $commonRadar = $sensorData }}
+					{{- end }}
+					{{- if $sensorData.transivers.radarTrack }}
+						{{- $trackRadar = $sensorData.transivers.radarTrack }}
+					{{- end }}
+					{{- if $sensorData.transivers.track }}
+						{{- $trackRadar = $sensorData.transivers.track }}
+					{{- end }}
+					{{- if $sensorData.transivers.irstTrack }}
+						{{- $irstTrack = $sensorData }}
+					{{- end }}
+				{{- end }}
+			{{- end }}
+
+			{{- $widestPattern := .val.sensors }}
+
+			{{- if $searchRadar.scanPatterns.search }}
+				{{- $widestPattern = $searchRadar.scanPatterns.search }}
+			{{- end }}
+
+			{{- if $searchRadar.scanPatterns.searchWide }}
+				{{- $widestPattern = $searchRadar.scanPatterns.searchWide }}
+			{{- end }}
+
+			{{- if $searchRadar.scanPatterns.search360 }}
+				{{- $widestPattern = $searchRadar.scanPatterns.search360 }}
+			{{- end }}
+
+			<tr>
+				<td>{{ $name }}</td>
+				<td>{{ .br }}</td>
+				{{- if $commonRadar.transivers }}
+					<td>{{ div $commonRadar.transivers.common.rangeMax 1000 }}km</td>
+				{{- else if $searchRadar.transivers }}
+					<td>{{ div $searchRadar.transivers.search.rangeMax 1000 }}km</td>
+				{{- else }}
+					<td></td>
+				{{- end }}
+				{{- if $widestPattern.azimuthLimits }}
+					<td>{{ add (mul (index $widestPattern.azimuthLimits 0) -1) (index $widestPattern.azimuthLimits 1) }}x{{math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}</td>
+				{{- else }}
+					<td></td>
+				{{- end }}
+				{{- if $widestPattern.azimuthLimits }}
+					<td>{{ $widestPattern.period }}s</td>
+				{{- else }}
+					<td></td>
+				{{- end }}
+				{{- if $trackRadar.rangeMax }}
+					<td>{{ div $trackRadar.rangeMax 1000 }}km</td>
+				{{- else }}
+					<td></td>
+				{{- end }}
+				{{- if $trackRadar.power }}
+					<td> {{ $trackRadar.power }} </td>
+				{{- else }}
+					<td></td>
+				{{- end }}
+				{{- if $irstTrack.transivers }}
+					<td>{{ div $irstTrack.transivers.irstTrack.rangeMax 1000 }}km</td>
+				{{- else }}
+					<td></td>
+				{{- end }}
+			</tr>
+		{{- end }}
+	{{- end }}
+</table>
