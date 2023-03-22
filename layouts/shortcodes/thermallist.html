@@ -2,22 +2,24 @@
 {{- $entries := slice}}
 {{- range $i, $val := $.Site.Data.gamedata.units.tankmodels }}
 	{{- if and (and (hasPrefix $i $prefix) (not (in $i "_race"))) (not (in $i "_cup"))}}
-		{{- if .modifications.night_vision_system }}
-			{{- $cost := 0 }}
-			{{- $presetname := (strings.TrimSuffix "_default" $val.weapon_presets.preset.name) }}
+		{{- if not (eq $i "ussr_apc_bmp_1") }}
+			{{- if .modifications.night_vision_system }}
+				{{- $cost := 0 }}
+				{{- $presetname := (strings.TrimSuffix "_default" $val.weapon_presets.preset.name) }}
 
-			{{- if (index $.Site.Data.config.wpcost $i)}}
-				{{- $cost = (index $.Site.Data.config.wpcost $i).economicRankHistorical}}
-			{{- end }}
-			{{- if (index $.Site.Data.config.wpcost $presetname)}}
-				{{- $cost = (index $.Site.Data.config.wpcost $presetname).economicRankHistorical}}
-			{{- end }}
+				{{- if (index $.Site.Data.config.wpcost $i)}}
+					{{- $cost = (index $.Site.Data.config.wpcost $i).economicRankHistorical}}
+				{{- end }}
+				{{- if (index $.Site.Data.config.wpcost $presetname)}}
+					{{- $cost = (index $.Site.Data.config.wpcost $presetname).economicRankHistorical}}
+				{{- end }}
 
-			{{- if $cost }}
-				{{- $realcost := add (div (float $cost ) 3.0) 1.0}}
-				{{- $br := partial "round.html" (dict "num" $realcost "power" 1 )}}
-				{{- $entries = $entries | append (dict "i" $i "val" $val "br" $br)}}
-			{{ end }}
+				{{- if $cost }}
+					{{- $realcost := add (div (float $cost ) 3.0) 1.0}}
+					{{- $br := partial "round.html" (dict "num" $realcost "power" 1 )}}
+					{{- $entries = $entries | append (dict "i" $i "val" $val "br" $br)}}
+				{{ end }}
+			{{- end }}
 		{{- end }}
 	{{- end }}
 {{- end }}
