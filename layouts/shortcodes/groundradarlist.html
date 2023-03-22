@@ -76,16 +76,30 @@
 
 			{{- $widestPattern := .val.sensors }}
 
-			{{- if $searchRadar.scanPatterns.search }}
-				{{- $widestPattern = $searchRadar.scanPatterns.search }}
-			{{- end }}
+			{{- if $commonRadar.transivers }}
+				{{- if $commonRadar.scanPatterns.search }}
+					{{- $widestPattern = $commonRadar.scanPatterns.search }}
+				{{- end }}
 
-			{{- if $searchRadar.scanPatterns.searchWide }}
-				{{- $widestPattern = $searchRadar.scanPatterns.searchWide }}
-			{{- end }}
+				{{- if $commonRadar.scanPatterns.searchWide }}
+					{{- $widestPattern = $commonRadar.scanPatterns.searchWide }}
+				{{- end }}
 
-			{{- if $searchRadar.scanPatterns.search360 }}
-				{{- $widestPattern = $searchRadar.scanPatterns.search360 }}
+				{{- if $commonRadar.scanPatterns.search360 }}
+					{{- $widestPattern = $commonRadar.scanPatterns.search360 }}
+				{{- end }}
+			{{- else if $searchRadar.transivers }}
+				{{- if $searchRadar.scanPatterns.search }}
+					{{- $widestPattern = $searchRadar.scanPatterns.search }}
+				{{- end }}
+
+				{{- if $searchRadar.scanPatterns.searchWide }}
+					{{- $widestPattern = $searchRadar.scanPatterns.searchWide }}
+				{{- end }}
+
+				{{- if $searchRadar.scanPatterns.search360 }}
+					{{- $widestPattern = $searchRadar.scanPatterns.search360 }}
+				{{- end }}
 			{{- end }}
 
 			<tr>
