@@ -1,7 +1,7 @@
 baseURL = 'https://thunderview.net/'
 languageCode = 'en-us'
 title = 'Thunder View'
-theme = "risotto"
+theme = ["risotto"]
 enableInlineShortcodes = true
 timeout = "90s"
 

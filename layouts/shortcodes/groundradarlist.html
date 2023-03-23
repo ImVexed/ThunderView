@@ -1,185 +1,359 @@
 {{- $entries := slice}}
 {{- range $i, $val := $.Site.Data.gamedata.units.tankmodels }}
-	{{- if and (not (in $i "_race")) (not (in $i "_cup"))}}
-		{{- if and (eq .type "typeSPAA") (.sensors) }}
-			{{- $cost := 0 }}
-			{{- $presetname := (strings.TrimSuffix "_default" $val.weapon_presets.preset.name) }}
+{{- if and (not (in $i "_race")) (not (in $i "_cup"))}}
+{{- if and (eq .type "typeSPAA") (.sensors) }}
+{{- $cost := 0 }}
+{{- $presetname := (strings.TrimSuffix "_default" $val.weapon_presets.preset.name) }}
 
-			{{- if (index $.Site.Data.config.wpcost $i)}}
-				{{- $cost = (index $.Site.Data.config.wpcost $i).economicRankHistorical}}
-			{{- end }}
-			{{- if (index $.Site.Data.config.wpcost $presetname)}}
-				{{- $cost = (index $.Site.Data.config.wpcost $presetname).economicRankHistorical}}
-			{{- end }}
-
-			{{- if $cost }}
-				{{- $realcost := add (div (float $cost ) 3.0) 1.0}}
-				{{- $br := partial "round.html" (dict "num" $realcost "power" 1 )}}
-				{{- $entries = $entries | append (dict "i" $i "val" $val "br" $br)}}
-			{{ end }}
-
-		{{- end }}
-	{{- end }}
+{{- if (index $.Site.Data.config.wpcost $i)}}
+{{- $cost = (index $.Site.Data.config.wpcost $i).economicRankHistorical}}
+{{- end }}
+{{- if (index $.Site.Data.config.wpcost $presetname)}}
+{{- $cost = (index $.Site.Data.config.wpcost $presetname).economicRankHistorical}}
 {{- end }}
 
-This information probably isn't completely correct. If you find something incorrect please report it on github here: https://github.com/ImVexed/ThunderView/issues
-<table class="thermal" style="background: #141e24; min-width: max-content;margin: 0.3rem;">
-	<tr>
-	  <th>Vehicle</th>
-	  <th>BR</th>
-	  <th>Search Range </th>
-	  <th>Search Zone</th>
-	  <th>Search Speed</th>
-	  <th>Tracking Range</th>
-	  <th>Tracking Power</th>
-	  <th>IRST Range</th>
-	</tr>
-	{{- range sort $entries "br" "desc" }}
-		{{- $name := partial "tankname.html" (dict "tankname" .i "presetname" (strings.TrimSuffix "_default" .val.weapon_presets.preset.name)) }}
+{{- if $cost }}
+{{- $realcost := add (div (float $cost ) 3.0) 1.0}}
+{{- $br := partial "round.html" (dict "num" $realcost "power" 1 )}}
+{{- $entries = $entries | append (dict "i" $i "val" $val "br" $br)}}
+{{ end }}
+
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- $searchRadars := slice }}
+
+This information probably isn't completely correct. If you find something incorrect please report it on github here:
+https://github.com/ImVexed/ThunderView/issues
+<div style="display: flex; max-width: 50vw;">
+	<table id="radarlist" class="thermal" style="background: #141e24; min-width: max-content;margin: 0.3rem;">
+		<tr>
+			<th>Vehicle</th>
+			<th>BR</th>
+			<th>Search Range </th>
+			<th>Search Zone</th>
+			<th>Search Speed</th>
+			<th>Tracking Range</th>
+			<th>Tracking Power</th>
+			<th>IRST Range</th>
+		</tr>
+		{{- range sort $entries "br" "desc" }}
+		{{- $name := partial "tankname.html" (dict "tankname" .i "presetname" (strings.TrimSuffix "_default"
+		.val.weapon_presets.preset.name)) }}
 		{{- if $name }}
-			{{- $searchRadar := .val.sensors }}
-			{{- $commonRadar := .val.sensors }}
-			{{- $trackRadar := .val.sensors }}
-			{{- $irstTrack := .val.sensors }}
+		{{- $searchRadar := .val.sensors }}
+		{{- $commonRadar := .val.sensors }}
+		{{- $trackRadar := .val.sensors }}
+		{{- $irstTrack := .val.sensors }}
 
-			{{- $sensorName := "" }}
-			{{ $type := (printf "%T" .val.sensors.sensor) }}
+		{{- $sensorName := "" }}
+		{{ $type := (printf "%T" .val.sensors.sensor) }}
 
-			{{- $sensors := .val.sensors.sensor }}
+		{{- $sensors := .val.sensors.sensor }}
 
-			{{- if not (eq $type "[]interface {}") }}
-				{{- $sensors = slice $sensors }}
-			{{- end }}
-
-			{{- range $sensor := $sensors }}
-				{{- $sensorName = (strings.TrimPrefix "gameData/sensors/" (strings.TrimSuffix ".blk" $sensor.blk)) }}
-
-				{{- $sensorData := (index $.Site.Data.gamedata.sensors $sensorName) }}
-
-				{{- if $sensorData }}
-					{{- if $sensorData.transivers.search}}
-						{{- $searchRadar = $sensorData }}
-					{{- end }}
-					{{- if $sensorData.transivers.common}}
-						{{- $commonRadar = $sensorData }}
-					{{- end }}
-					{{- if $sensorData.transivers.radarTrack }}
-						{{- $trackRadar = $sensorData.transivers.radarTrack }}
-					{{- end }}
-					{{- if $sensorData.transivers.track }}
-						{{- $trackRadar = $sensorData.transivers.track }}
-					{{- end }}
-					{{- if $sensorData.transivers.irstTrack }}
-						{{- $irstTrack = $sensorData }}
-					{{- end }}
-				{{- end }}
-			{{- end }}
-
-			{{- $widestPattern := .val.sensors }}
-
-			{{- if $commonRadar.transivers }}
-				{{- if $commonRadar.scanPatterns.search }}
-					{{- $widestPattern = $commonRadar.scanPatterns.search }}
-				{{- end }}
-
-				{{- if $commonRadar.scanPatterns.searchWide }}
-					{{- $widestPattern = $commonRadar.scanPatterns.searchWide }}
-				{{- end }}
-
-				{{- if $commonRadar.scanPatterns.search360 }}
-					{{- $widestPattern = $commonRadar.scanPatterns.search360 }}
-				{{- end }}
-			{{- else if $searchRadar.transivers }}
-				{{- if $searchRadar.scanPatterns.search }}
-					{{- $widestPattern = $searchRadar.scanPatterns.search }}
-				{{- end }}
-
-				{{- if $searchRadar.scanPatterns.searchWide }}
-					{{- $widestPattern = $searchRadar.scanPatterns.searchWide }}
-				{{- end }}
-
-				{{- if $searchRadar.scanPatterns.search360 }}
-					{{- $widestPattern = $searchRadar.scanPatterns.search360 }}
-				{{- end }}
-			{{- end }}
-
-			{{- $searchZoneAzimuthWidth := 0 }}
-			{{- $searchZoneElevationWidth := 0 }}
-			{{- $major := 0 }}
-			{{- $minor := 0 }}
-			{{- $rowMajor := true }}
-
-			{{- if eq $widestPattern.type "cylinder" }}
-				{{- $major = 360 }}
-				{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
-				{{- $rowMajor = $widestPattern.rowMajor }}
-			{{- else if eq $widestPattern.type "pyramide" }}
-				{{- $major = (mul 2 $widestPattern.width)}}
-				{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
-				{{- $rowMajor = $widestPattern.rowMajor }}
-			{{- else if eq $widestPattern.type "cone" }}
-				{{- $major = (mul 2 $widestPattern.width)}}
-				{{- $minor = $major }}
-			{{- end }}
-
-			{{- if $rowMajor }}
-				{{- $searchZoneAzimuthWidth = $major }}
-				{{- $searchZoneElevationWidth = $minor }}
-			{{- else }}
-				{{- $searchZoneAzimuthWidth = $minor }}
-				{{- $searchZoneElevationWidth = $major }}
-			{{- end }}
-
-			{{- $searchRange := 0 }}
-			{{- $ranges := slice}}
-			{{- if $commonRadar.transivers }}
-				{{- $ranges = $commonRadar.scopeRangeSets.common }}
-			{{- else if $searchRadar.scopeRanges }}
-				{{- $ranges = $searchRadar.scopeRanges }}
-			{{- else if $searchRadar.scopeRangeSets }}
-				{{- $ranges = $searchRadar.scopeRangeSets.common }}
-			{{- end }}
-
-			{{- range $range := $ranges }}
-				{{- if gt $range $searchRange }}
-					{{- $searchRange = $range }}
-				{{- end }}
-			{{- end }}
-
-			<tr>
-				<td>{{ $name }}</td>
-				<td>{{ .br }}</td>
-				{{- if eq $searchRange 0 }}
-					<td></td>
-				{{- else }}
-					<td>{{- math.Round (div $searchRange 1000) }}km</td>
-				{{- end }}
-				{{- if $widestPattern.azimuthLimits }}
-					<td>{{ $searchZoneAzimuthWidth }}x{{ $searchZoneElevationWidth }}</td>
-				{{- else }}
-					<td></td>
-				{{- end }}
-				{{- if $widestPattern.azimuthLimits }}
-					<td>{{ $widestPattern.period }}s</td>
-				{{- else }}
-					<td></td>
-				{{- end }}
-				{{- if $trackRadar.rangeMax }}
-					<td>{{ div $trackRadar.rangeMax 1000 }}km</td>
-				{{- else }}
-					<td></td>
-				{{- end }}
-				{{- if $trackRadar.power }}
-					<td> {{ $trackRadar.power }} </td>
-				{{- else }}
-					<td></td>
-				{{- end }}
-				{{- if $irstTrack.transivers }}
-					<td>{{ div $irstTrack.transivers.irstTrack.rangeMax 1000 }}km</td>
-				{{- else }}
-					<td></td>
-				{{- end }}
-			</tr>
+		{{- if not (eq $type "[]interface {}") }}
+		{{- $sensors = slice $sensors }}
 		{{- end }}
+
+		{{- range $sensor := $sensors }}
+		{{- $sensorName = (strings.TrimPrefix "gameData/sensors/" (strings.TrimSuffix ".blk" $sensor.blk)) }}
+
+		{{- $sensorData := (index $.Site.Data.gamedata.sensors $sensorName) }}
+
+		{{- if $sensorData }}
+		{{- if $sensorData.transivers.search}}
+		{{- $searchRadar = $sensorData }}
+		{{- end }}
+		{{- if $sensorData.transivers.common}}
+		{{- $commonRadar = $sensorData }}
+		{{- end }}
+		{{- if $sensorData.transivers.radarTrack }}
+		{{- $trackRadar = $sensorData.transivers.radarTrack }}
+		{{- end }}
+		{{- if $sensorData.transivers.track }}
+		{{- $trackRadar = $sensorData.transivers.track }}
+		{{- end }}
+		{{- if $sensorData.transivers.irstTrack }}
+		{{- $irstTrack = $sensorData }}
+		{{- end }}
+		{{- end }}
+		{{- end }}
+
+		{{- $widestPattern := .val.sensors }}
+
+		{{- if $commonRadar.transivers }}
+		{{- if $commonRadar.scanPatterns.search }}
+		{{- $widestPattern = $commonRadar.scanPatterns.search }}
+		{{- end }}
+
+		{{- if $commonRadar.scanPatterns.searchWide }}
+		{{- $widestPattern = $commonRadar.scanPatterns.searchWide }}
+		{{- end }}
+
+		{{- if $commonRadar.scanPatterns.search360 }}
+		{{- $widestPattern = $commonRadar.scanPatterns.search360 }}
+		{{- end }}
+		{{- else if $searchRadar.transivers }}
+		{{- if $searchRadar.scanPatterns.search }}
+		{{- $widestPattern = $searchRadar.scanPatterns.search }}
+		{{- end }}
+
+		{{- if $searchRadar.scanPatterns.searchWide }}
+		{{- $widestPattern = $searchRadar.scanPatterns.searchWide }}
+		{{- end }}
+
+		{{- if $searchRadar.scanPatterns.search360 }}
+		{{- $widestPattern = $searchRadar.scanPatterns.search360 }}
+		{{- end }}
+		{{- end }}
+
+		{{- $searchZoneAzimuthWidth := 0 }}
+		{{- $searchZoneElevationWidth := 0 }}
+		{{- $major := 0 }}
+		{{- $minor := 0 }}
+		{{- $rowMajor := true }}
+
+		{{- if eq $widestPattern.type "cylinder" }}
+		{{- $major = 360 }}
+		{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
+		{{- $rowMajor = $widestPattern.rowMajor }}
+		{{- else if eq $widestPattern.type "pyramide" }}
+		{{- $major = (mul 2 $widestPattern.width)}}
+		{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
+		{{- $rowMajor = $widestPattern.rowMajor }}
+		{{- else if eq $widestPattern.type "cone" }}
+		{{- $major = (mul 2 $widestPattern.width)}}
+		{{- $minor = $major }}
+		{{- end }}
+
+		{{- if $rowMajor }}
+		{{- $searchZoneAzimuthWidth = $major }}
+		{{- $searchZoneElevationWidth = $minor }}
+		{{- else }}
+		{{- $searchZoneAzimuthWidth = $minor }}
+		{{- $searchZoneElevationWidth = $major }}
+		{{- end }}
+
+		{{- $searchRange := 0 }}
+		{{- $ranges := slice}}
+		{{- if $commonRadar.transivers }}
+		{{- $ranges = $commonRadar.scopeRangeSets.common }}
+		{{- else if $searchRadar.scopeRanges }}
+		{{- $ranges = $searchRadar.scopeRanges }}
+		{{- else if $searchRadar.scopeRangeSets }}
+		{{- $ranges = $searchRadar.scopeRangeSets.common }}
+		{{- end }}
+
+		{{- range $range := $ranges }}
+		{{- if gt $range $searchRange }}
+		{{- $searchRange = $range }}
+		{{- end }}
+		{{- end }}
+
+		{{- if and (not (eq $searchRange 0)) $widestPattern.azimuthLimits }}
+		{{- $searchRadars = $searchRadars | append (dict "name" $name "maxElevation" $searchZoneElevationWidth
+		"maxRange"
+		$searchRange )}}
+		{{- end }}
+
+		<tr>
+			<td>{{ $name }}</td>
+			<td>{{ .br }}</td>
+			{{- if eq $searchRange 0 }}
+			<td></td>
+			{{- else }}
+			<td>{{- math.Round (div $searchRange 1000) }}km</td>
+			{{- end }}
+			{{- if $widestPattern.azimuthLimits }}
+			<td>{{ $searchZoneAzimuthWidth }}x{{ $searchZoneElevationWidth }}</td>
+			{{- else }}
+			<td></td>
+			{{- end }}
+			{{- if $widestPattern.azimuthLimits }}
+			<td>{{ $widestPattern.period }}s</td>
+			{{- else }}
+			<td></td>
+			{{- end }}
+			{{- if $trackRadar.rangeMax }}
+			<td>{{ div $trackRadar.rangeMax 1000 }}km</td>
+			{{- else }}
+			<td></td>
+			{{- end }}
+			{{- if $trackRadar.power }}
+			<td> {{ $trackRadar.power }} </td>
+			{{- else }}
+			<td></td>
+			{{- end }}
+			{{- if $irstTrack.transivers }}
+			<td>{{ div $irstTrack.transivers.irstTrack.rangeMax 1000 }}km</td>
+			{{- else }}
+			<td></td>
+			{{- end }}
+		</tr>
+		{{- end }}
+		{{- end }}
+	</table>
+
+	<canvas id="radarChart"></canvas>
+</div>
+<script>
+	let radars = [
+	{{- range $radar := $searchRadars }}
+	{
+		name: "{{- $radar.name }}",
+			maxRange: {{- $radar.maxRange }},
+		maxElevation: {{- $radar.maxElevation }}
+	},
 	{{- end }}
-</table>
+	];
+
+	let previousColors = [];
+	function getRandomColor(usedColors) {
+		const maxTries = 100;
+		let tries = 0;
+
+		while (tries < maxTries) {
+			const r = Math.floor(Math.random() * 256);
+			const g = Math.floor(Math.random() * 256);
+			const b = Math.floor(Math.random() * 256);
+			const newColor = `rgb(${r}, ${g}, ${b})`;
+
+			if (usedColors.every((usedColor) => colorDistance(newColor, usedColor) >= 100)) {
+				usedColors.push(newColor);
+				return {
+					borderColor: newColor,
+					backgroundColor: `rgba(${r}, ${g}, ${b}, 0.15)`,
+				};
+			}
+
+			tries++;
+		}
+
+		console.error(`Unable to generate a new color after ${maxTries} tries`);
+		return {
+			borderColor: 'black',
+			backgroundColor: 'rgba(0, 0, 0, 0.3)',
+		};
+	}
+
+	function colorDistance(color1, color2) {
+		const [r1, g1, b1] = color1.slice(4, -1).split(',').map((n) => parseInt(n, 10));
+		const [r2, g2, b2] = color2.slice(4, -1).split(',').map((n) => parseInt(n, 10));
+		const rmean = (r1 + r2) / 2;
+		const r = r1 - r2;
+		const g = g1 - g2;
+		const b = b1 - b2;
+
+		return Math.sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8));
+	}
+
+	function generateRadarDatasets(radars) {
+		return radars.map((radar) => {
+			const data = [];
+
+			// Add starting point of the triangle (origin)
+			data.push({ x: 0, y: 0 });
+
+			// Add the top point of the triangle
+			const rangeTop = radar.maxRange * Math.cos((radar.maxElevation * Math.PI) / 180);
+			const elevationTop = radar.maxRange * Math.sin((radar.maxElevation * Math.PI) / 180);
+			data.push({ x: radar.maxRange, y: elevationTop });
+
+			// Add the end point of the triangle (back to origin along the x-axis)
+			data.push({ x: radar.maxRange, y: 0 });
+
+			const colors = getRandomColor(previousColors);
+
+			return {
+				label: radar.name,
+				data: data,
+				borderColor: colors.borderColor,
+				borderWidth: 2,
+				hoverBackgroundColor: colors.backgroundColor,
+				fill: true,
+				showLine: true,
+				pointRadius: 5,
+				pointHoverRadius: 5,
+				tension: 0,
+			};
+		});
+	}
+	const ctx = document.getElementById("radarChart").getContext("2d");
+
+	// Order ranges so the legend is in the same order as the data
+	radars.sort((a, b) => b.maxRange - a.maxRange);
+	const maxRange = Math.max(...radars.map((radar) => radar.maxRange));
+	const radarWithHighestElevation = radars.reduce((prev, current) => {
+		return prev.maxElevation > current.maxElevation ? prev : current;
+	});
+	const maxElevationOverDistance = radarWithHighestElevation.maxRange * Math.sin((radarWithHighestElevation.maxElevation * Math.PI) / 180);
+
+	const radarChart = new Chart(ctx, {
+		type: "scatter",
+		data: {
+			datasets: generateRadarDatasets(radars),
+		},
+		options: {
+			responsive: true,
+			scales: {
+				x: {
+					min: 0,
+					max: maxRange,
+					title: {
+						display: true,
+						text: "Range (m)",
+					},
+				},
+				y: {
+					min: 0,
+					max: maxElevationOverDistance,
+					title: {
+						display: true,
+						text: "Elevation (m)",
+					},
+				},
+			},
+			plugins: {
+				zoom: {
+					pan: {
+						enabled: true,
+						mode: 'xy',
+					},
+
+					zoom: {
+						wheel: {
+							enabled: true,
+						},
+						pinch: {
+							enabled: true
+						},
+						mode: 'xy',
+
+					},
+				},
+				legend: {
+					position: "bottom",
+				},
+				tooltip: {
+					enabled: true,
+					mode: 'nearest',
+					intersect: false,
+					callbacks: {
+						title: function (context) {
+							return context[0].dataset.label;
+						},
+						label: function (context) {
+							const point = context.parsed;
+							const range = point.x.toFixed(2);
+							const radarName = context.dataset.label;
+							const radar = radars.find(radar => radar.name === radarName);
+							const elevation = radar.maxElevation.toFixed(2);
+							return `${radarName}: Range: ${Math.round(range)}m, Elevation: ${elevation}°`;
+						},
+					},
+				},
+			},
+		},
+	});
+</script>
