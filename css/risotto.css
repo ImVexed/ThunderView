@@ -17,6 +17,20 @@ body {
 .thermal tr:nth-child(even) td{
     background-color: #141E24;
 }
+
+.spaced tr:nth-child(odd) td{
+  background-color: #1e2c35
+}
+.spaced tr:nth-child(even) td{
+  background-color: #141E24;
+}
+
+.spaced th, .spaced td {
+  padding: 0 .75rem;
+  vertical-align: top;
+}
+
+
 /* CSS */
 .button-23 {
     background-color: transparent;
