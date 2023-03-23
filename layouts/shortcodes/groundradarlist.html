@@ -130,15 +130,29 @@ This information probably isn't completely correct. If you find something incorr
 				{{- $searchZoneElevationWidth = $major }}
 			{{- end }}
 
+			{{- $searchRange := 0 }}
+			{{- $ranges := slice}}
+			{{- if $commonRadar.transivers }}
+				{{- $ranges = $commonRadar.scopeRangeSets.common }}
+			{{- else if $searchRadar.scopeRanges }}
+				{{- $ranges = $searchRadar.scopeRanges }}
+			{{- else if $searchRadar.scopeRangeSets }}
+				{{- $ranges = $searchRadar.scopeRangeSets.common }}
+			{{- end }}
+
+			{{- range $range := $ranges }}
+				{{- if gt $range $searchRange }}
+					{{- $searchRange = $range }}
+				{{- end }}
+			{{- end }}
+
 			<tr>
 				<td>{{ $name }}</td>
 				<td>{{ .br }}</td>
-				{{- if $commonRadar.transivers }}
-					<td>{{ div $commonRadar.transivers.common.rangeMax 1000 }}km</td>
-				{{- else if $searchRadar.transivers }}
-					<td>{{ div $searchRadar.transivers.search.rangeMax 1000 }}km</td>
-				{{- else }}
+				{{- if eq $searchRange 0 }}
 					<td></td>
+				{{- else }}
+					<td>{{- math.Round (div $searchRange 1000) }}km</td>
 				{{- end }}
 				{{- if $widestPattern.azimuthLimits }}
 					<td>{{ $searchZoneAzimuthWidth }}x{{ $searchZoneElevationWidth }}</td>
