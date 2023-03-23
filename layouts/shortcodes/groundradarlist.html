@@ -103,6 +103,33 @@ This information probably isn't completely correct. If you find something incorr
 				{{- end }}
 			{{- end }}
 
+			{{- $searchZoneAzimuthWidth := 0 }}
+			{{- $searchZoneElevationWidth := 0 }}
+			{{- $major := 0 }}
+			{{- $minor := 0 }}
+			{{- $rowMajor := true }}
+
+			{{- if eq $widestPattern.type "cylinder" }}
+				{{- $major = 360 }}
+				{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
+				{{- $rowMajor = $widestPattern.rowMajor }}
+			{{- else if eq $widestPattern.type "pyramide" }}
+				{{- $major = (mul 2 $widestPattern.width)}}
+				{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
+				{{- $rowMajor = $widestPattern.rowMajor }}
+			{{- else if eq $widestPattern.type "cone" }}
+				{{- $major = (mul 2 $widestPattern.width)}}
+				{{- $minor = $major }}
+			{{- end }}
+
+			{{- if $rowMajor }}
+				{{- $searchZoneAzimuthWidth = $major }}
+				{{- $searchZoneElevationWidth = $minor }}
+			{{- else }}
+				{{- $searchZoneAzimuthWidth = $minor }}
+				{{- $searchZoneElevationWidth = $major }}
+			{{- end }}
+
 			<tr>
 				<td>{{ $name }}</td>
 				<td>{{ .br }}</td>
@@ -114,7 +141,7 @@ This information probably isn't completely correct. If you find something incorr
 					<td></td>
 				{{- end }}
 				{{- if $widestPattern.azimuthLimits }}
-					<td>{{ add (mul (index $widestPattern.azimuthLimits 0) -1) (index $widestPattern.azimuthLimits 1) }}x{{math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}</td>
+					<td>{{ $searchZoneAzimuthWidth }}x{{ $searchZoneElevationWidth }}</td>
 				{{- else }}
 					<td></td>
 				{{- end }}
