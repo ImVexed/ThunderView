@@ -71,21 +71,24 @@
 			{{- end }}
 			{{- if $nvs.effects.nightVision.gunnerThermal }} <!-- Gunner  -->
 				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" ($nvs.effects.nightVision.gunnerThermal.resolution)) -}} </td>
-			{{- end }}
-			{{- if $nvs.effects.nightVision.gunnerIr }}
+			{{- else if $nvs.effects.nightVision.gunnerIr }}
 				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" ($nvs.effects.nightVision.gunnerIr.resolution)) -}} </td>
+			{{- else }}
+				<td></td>
 			{{- end }}
 			{{- if $nvs.effects.nightVision.commanderViewThermal }} <!-- Commander  -->
 				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" ($nvs.effects.nightVision.commanderViewThermal.resolution)) -}} </td>
-			{{- end }}
-			{{- if $nvs.effects.nightVision.commanderViewIr }}
+			{{- else if $nvs.effects.nightVision.commanderViewIr }}
 				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" ($nvs.effects.nightVision.commanderViewIr.resolution)) -}} </td>
+			{{- else }}
+				<td></td>
 			{{- end }}
 			{{- if $nvs.effects.nightVision.driverThermal }} <!-- Driver  -->
 				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" ($nvs.effects.nightVision.driverThermal.resolution)) -}} </td>
-			{{- end }}
-			{{- if $nvs.effects.nightVision.driverIr }}
+			{{- else if $nvs.effects.nightVision.driverIr }}
 				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" ($nvs.effects.nightVision.driverIr.resolution)) -}} </td>
+			{{- else }}
+				<td></td>
 			{{- end }}
 		</tr>
 	{{- end }}
