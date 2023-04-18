@@ -1,7 +1,7 @@
 {{- $prefix := .Get "nation"}}
 {{- $entries := slice}}
 {{- range $i, $val := $.Site.Data.gamedata.units.tankmodels }}
-	{{- if and (and (hasPrefix $i $prefix) (not (in $i "_race"))) (not (in $i "_cup"))}}
+	{{- if and (and (and (hasPrefix $i $prefix) (not (in $i "_race"))) (not (in $i "_cup"))) (not (eq $val.subclass "human")) }}
 		{{- if not (eq $i "ussr_apc_bmp_1") }}
 			{{- if .modifications.night_vision_system }}
 				{{- $cost := 0 }}
