@@ -1,2 +1,2 @@
-{{- $ratio := math.Pow 10.0 .power}}
-{{- return (div (math.Round (mul .num $ratio )) $ratio)}}
+{{- $mul := math.Pow 10.0 .power}}
+{{- return lang.NumFmt 1 (div (math.Floor ((add 0.5 (mul .num $mul)))) $mul)}}

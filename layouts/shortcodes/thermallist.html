@@ -9,8 +9,7 @@
 
 				{{- if (index $.Site.Data.config.wpcost $i)}}
 					{{- $cost = (index $.Site.Data.config.wpcost $i).economicRankHistorical}}
-				{{- end }}
-				{{- if (index $.Site.Data.config.wpcost $presetname)}}
+				{{- else if (index $.Site.Data.config.wpcost $presetname)}}
 					{{- $cost = (index $.Site.Data.config.wpcost $presetname).economicRankHistorical}}
 				{{- end }}
 
