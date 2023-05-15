@@ -1,3 +1,27 @@
+{{- $sams := slice }}
+{{- range $i, $val := $.Site.Data.gamedata.weapons.groundmodels_weapons  }}
+	{{- if .bullet }}
+		{{- if gt (len .bullet) 5}}
+			{{- if eq .bullet.bulletType "sam_tank" }}
+				{{- $name := partial "missilename.html" (dict "missilename" .bullet.bulletName) }}
+					{{- if $name }}
+						<!-- Make sure we don't already have a missile with the same name  -->
+						{{- $found := false }}
+						{{- range $j, $sam := $sams }}
+							{{- if eq $sam.name $name }}
+								{{- $found = true }}
+							{{- end }}
+						{{- end }}
+						{{- if not $found }}
+							{{- $sams = $sams | append (dict "name" $name "val" .bullet) }}
+						
+						{{- end }}
+					{{- end }}
+				{{- end }}
+			{{- end }}
+		{{- end }}
+	{{- end }}
+
 <table class="spaced" style="background: #141e24; min-width: max-content;margin: 0.3rem;">
 	<tr>
 	  <th>Missile</th>
@@ -8,43 +32,37 @@
 	  <th>Proxy</th>
 	  <th>Leading</th> 
 	</tr>
-{{- range $i, $val := $.Site.Data.gamedata.weapons.groundmodels_weapons  }}
-	{{- if .bullet }}
-	{{- if gt (len .bullet) 5}}
-		{{- if eq .bullet.rocket.bulletType "sam_tank" }}
-			{{- $name := partial "missilename.html" (dict "missilename" .bullet.bulletName) }}
-			{{- if $name }} 
-				<tr>
-					<td style="text-align: left;position:relative;width:7rem;vertical-align:middle;text-overflow: ellipsis;overflow:hidden;white-space: nowrap;">
-						{{- $name -}}
-					</td>
-					<td style="width:5rem;">
-						{{- .bullet.rocket.loadFactorMax }}G
-					</td>
-					<td style="width:5rem;">
-						{{- .bullet.rocket.endSpeed }}m/s
-					</td>
-					<td style="width:8rem;">
-						{{- $equiv := (index $.Site.Data.gamedata.damage_model.explosive.explosiveTypes .bullet.rocket.explosiveType)}}
-						{{- partial "round.html" (dict "num" (mul $equiv.strengthEquivalent .bullet.rocket.explosiveMass) "power" 2 )}}Kg TNT
-					</td>
-					<td style="width:5rem;">
-						{{- .bullet.rocket.maxDistance }}m
-					</td>
-					<td style="width:4rem;">
-						{{- if .bullet.rocket.proximityFuse }}
-							{{- .bullet.rocket.proximityFuse.radius }}m
-						{{- end }}
-					</td>
-					<td style="width:5rem;">
-						{{- if .bullet.rocket.guidance }}
-							{{- .bullet.rocket.guidance.leading }}
-						{{- end }}
-					</td>
-				</tr>
-				{{- end }}
-			{{- end }}
+<!-- Sort the missiles by loadFactorMax -->
+{{- range sort $sams "val.rocket.loadFactorMax" }}
+<tr>
+	<td style="text-align: left;position:relative;width:7rem;vertical-align:middle;text-overflow: ellipsis;overflow:hidden;white-space: nowrap;">
+		{{- .name -}}
+	</td>
+	<td style="width:5rem;">
+		{{- if .val.rocket.loadFactorMax }}
+			{{- .val.rocket.loadFactorMax }}G
 		{{- end }}
+	</td>
+	<td style="width:5rem;">
+		{{- .val.rocket.endSpeed }}m/s
+	</td>
+	<td style="width:8rem;">
+		{{- $equiv := (index $.Site.Data.gamedata.damage_model.explosive.explosiveTypes .val.rocket.explosiveType)}}
+		{{- partial "round.html" (dict "num" (mul $equiv.strengthEquivalent .val.rocket.explosiveMass) "power" 2 )}}Kg TNT
+	</td>
+	<td style="width:5rem;">
+		{{- .val.rocket.maxDistance }}m
+	</td>
+	<td style="width:4rem;">
+		{{- if .val.rocket.proximityFuse }}
+			{{- .val.rocket.proximityFuse.radius }}m
 		{{- end }}
-	{{- end }}
+	</td>
+	<td style="width:5rem;">
+		{{- if .val.rocket.guidance }}
+			{{- .val.rocket.guidance.leading }}
+		{{- end }}
+	</td>
+</tr>
+{{- end }}
 </table>
