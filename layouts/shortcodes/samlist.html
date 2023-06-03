@@ -47,8 +47,10 @@
 		{{- .val.rocket.endSpeed }}m/s
 	</td>
 	<td style="width:8rem;">
-		{{- $equiv := (index $.Site.Data.gamedata.damage_model.explosive.explosiveTypes .val.rocket.explosiveType)}}
-		{{- partial "round.html" (dict "num" (mul $equiv.strengthEquivalent .val.rocket.explosiveMass) "power" 2 )}}Kg TNT
+		{{- if .val.rocket.explosiveType }}
+			{{- $equiv := (index $.Site.Data.gamedata.damage_model.explosive.explosiveTypes .val.rocket.explosiveType)}}
+			{{- partial "round.html" (dict "num" (mul $equiv.strengthEquivalent .val.rocket.explosiveMass) "power" 2 )}}Kg TNT
+		{{- end }}
 	</td>
 	<td style="width:5rem;">
 		{{- .val.rocket.maxDistance }}m

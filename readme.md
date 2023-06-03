@@ -7,6 +7,6 @@ To seed data:
 > mv War-Thunder-Datamine/aces.vromfs.bin_u/gamedata data/  
 > mv War-Thunder-Datamine/char.vromfs.bin_u/config data/  
 > cd data  
-> zmv -n '(**/)(*).blkx' '$1$2.json' | bash  
+> find . -name '*.blkx' -exec bash -c 'mv "$0" "${0%.blkx}.json"' {} \;  
 > cd ..  
 > hugo server  
