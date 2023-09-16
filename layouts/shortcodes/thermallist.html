@@ -3,7 +3,13 @@
 {{- range $i, $val := $.Site.Data.gamedata.units.tankmodels }}
 	{{- if and (and (and (hasPrefix $i $prefix) (not (in $i "_race"))) (not (in $i "_cup"))) (not (eq $val.subclass "human")) }}
 		{{- if not (eq $i "ussr_apc_bmp_1") }}
-			{{- if .modifications.night_vision_system }}
+			{{- $hasNvs := .modifications.night_vision_system}}
+			{{- range $i, $val := .modifications }}
+				{{- if strings.Contains $i "upgrade_modification" }}
+					{{- $hasNvs = $val }}
+				{{- end }}
+			{{- end }}
+			{{- if $hasNvs}}
 				{{- $cost := 0 }}
 				{{- $presetname := (strings.TrimSuffix "_default" $val.weapon_presets.preset.name) }}
 
