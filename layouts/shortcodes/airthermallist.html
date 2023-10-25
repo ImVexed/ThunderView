@@ -3,7 +3,7 @@
 {{- range $i, $val := $.Site.Data.gamedata.flightmodels }}
 	{{- if and $val.model (not (in $i "_killstreak"))  }}
 		{{- $unittag := index $.Site.Data.config.unittags $val.model }}
-		{{- if index $unittag.tags (printf "country_%s" $nation)  }}
+		{{- if and $unittag.tags (index $unittag.tags (printf "country_%s" $nation)) }}
 			{{- $hasNvs := .modifications.heli_night_vision_system}}
 			{{- if not $hasNvs }}
 				{{- $hasNvs = .nightVision}}
