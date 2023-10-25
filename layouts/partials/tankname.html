@@ -1,4 +1,4 @@
-{{ $name := (print .tankname "_1")}}
+{{ $name := (print .tankname "_shop")}}
 {{ $value := 0 }}
 {{ range $i, $r := getCSV ";" "War-Thunder-Datamine/lang.vromfs.bin_u/lang/units.csv" }}
 	{{ if eq (index $r 0) $name}}

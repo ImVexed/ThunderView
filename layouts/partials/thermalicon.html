@@ -9,33 +9,54 @@
 	{{- if eq (len (intersect .resolution (slice 1024 768))) 2}}
 		{{- $gen = "2+" }}
 	{{- end }}
+	{{- if eq (len (intersect .resolution (slice 1080 720))) 2}}
+		{{- $gen = "2+" }}
+	{{- end }}
 	{{- if eq (len (intersect .resolution (slice 1200 800))) 2}}
 		{{- $gen = 3 }}
 	{{- end }}
+	{{- if eq (len (intersect .resolution (slice 1920 1080))) 2}}
+		{{- $gen = "3+" }}
+	{{- end }}
 {{- end }}
 {{- if not .isThermal }}
+	{{- if eq (len (intersect .resolution (slice 500 300))) 2}}
+		{{- $gen = 1 }}
+	{{- end }}
 	{{- if eq (len (intersect .resolution (slice 800 600))) 2}}
 		{{- $gen = 1 }}
 	{{- end }}
-	{{- if eq (len (intersect .resolution (slice 1200 800))) 2}}
+	{{- if eq (len (intersect .resolution (slice 900 500))) 2}}
+		{{- $gen = 1 }}
+	{{- end }}
+	{{- if eq (len (intersect .resolution (slice 1024 768))) 2}}
 		{{- $gen = 2 }}
+	{{- end }}
+	{{- if eq (len (intersect .resolution (slice 1200 800))) 2}}
+		{{- $gen = "2+" }}
 	{{- end }}
 	{{- if eq (len (intersect .resolution (slice 1600 1200))) 2}}
 		{{- $gen = 3 }}
 	{{- end }}
+	{{- if eq (len (intersect .resolution (slice 1920 1080))) 2}}
+		{{- $gen = "3+" }}
+	{{- end }}
 {{- end }}
 
-{{- $opacity := 0 }}
+{{- $opacity := 1 }}
 {{- if eq $gen 1}}
 	{{- $opacity = 0.5 }}
 {{- end }}
 {{- if eq $gen 2}}
-	{{- $opacity = 0.8 }}
+	{{- $opacity = 0.7 }}
 {{- end }}
 {{- if eq $gen "2+"}}
-	{{- $opacity = 1 }}
+	{{- $opacity = 0.8 }}
 {{- end }}
 {{- if eq $gen 3}}
+	{{- $opacity = 0.9 }}
+{{- end }}
+{{- if eq $gen "3+"}}
 	{{- $opacity = 1 }}
 {{- end }}
 
@@ -48,5 +69,9 @@
 	opacity: {{- $opacity }};
 	justify-content: center;
 	align-items: center;">
+	{{- if $gen }}
 	{{- $gen }}
+	{{- else }}
+	?
+	{{- end }}
 </div>

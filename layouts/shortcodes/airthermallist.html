@@ -1,0 +1,93 @@
+{{- $nation := .Get "nation"}}
+{{- $entries := slice}}
+{{- range $i, $val := $.Site.Data.gamedata.flightmodels }}
+	{{- if and $val.model (not (in $i "_killstreak"))  }}
+		{{- $unittag := index $.Site.Data.config.unittags $val.model }}
+		{{- if index $unittag.tags (printf "country_%s" $nation)  }}
+			{{- $hasNvs := .modifications.heli_night_vision_system}}
+			{{- if not $hasNvs }}
+				{{- $hasNvs = .nightVision}}
+			{{ end }}
+			{{- if $hasNvs}}
+				{{- $cost := 0 }}
+
+				{{- if (index $.Site.Data.config.wpcost $i)}}
+					{{- $cost = (index $.Site.Data.config.wpcost $i).economicRankHistorical}}
+				{{- end }}
+
+				{{- if $cost }}
+					{{- $realcost := add (div (float $cost ) 3.0) 1.0}}
+					{{- $br := partial "round.html" (dict "num" $realcost "power" 1 )}}
+					{{- $entries = $entries | append (dict "i" $i "val" $val "br" $br)}}
+				{{ end }}
+			{{- end }}
+		{{- end }}
+	{{- end }}
+{{- end }}
+
+<table class="thermal" style="background: #141e24; min-width: max-content;margin: 0.3rem;">
+	<tr>
+	  <th>Tank</th>
+	  <th></th>
+	  <th style="vertical-align:middle;">BR</th>
+	  <th><img style="width:1.5rem;" src="/gunner.svg"></th>
+	  <th><img style="width:1.5rem;" src="/commander.svg"></th>
+	  <th><img style="width:1.5rem;" src="/pilot.svg"></th> 
+	  <th><img style="width:1.5rem;" src="/tpod.svg"></th> 
+	</tr>
+{{- range sort $entries "br" "desc" }}
+	{{- $name := partial "tankname.html" (dict "tankname" .i "presetname" .val.model) }}
+	{{- if $name }} {{/*  If we couldn't find the tank's human readable name translations in `units.csv` chances are it doesn't actually exist in game  */}}
+		<tr>
+			<td style="text-align: left; padding-left:2%; padding-right:4% ;position:relative;width:12rem;vertical-align:middle;text-overflow: ellipsis;overflow:hidden;white-space: nowrap;">
+				<a href="https://wiki.warthunder.com/{{- strings.Replace $name " " "_" -1 -}}" target="_blank">{{- $name}}</a>
+			</td>
+			<td style="vertical-align:middle;">
+				{{- $unittag := index $.Site.Data.config.unittags .val.model }}
+				
+				{{- if eq $unittag.type "aircraft" }}
+					<img style="width:1.2rem;" src="/airplane.svg">
+				{{- else if eq $unittag.type "helicopter"}}
+					<img style="width:1.2rem;" src="/heli.svg">
+				{{- end}}
+			</td>
+			<td style="width:3rem;vertical-align:middle;"> 
+				{{- .br}}
+			</td>
+			{{- $nvs := .val.modifications.heli_night_vision_system.effects.nightVision}}
+			{{- if not $nvs }}
+				{{- $nvs = .val.nightVision}}
+			{{ end }}
+
+			{{- if $nvs.gunnerThermal }} <!-- Gunner  -->
+				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" ($nvs.gunnerThermal.resolution)) -}} </td>
+			{{- else if $nvs.gunnerIr }}
+				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" ($nvs.gunnerIr.resolution)) -}} </td>
+			{{- else }}
+				<td></td>
+			{{- end }}
+			{{- if $nvs.sightThermal }} <!-- Commander  -->
+				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" ($nvs.sightThermal.resolution)) -}} </td>
+			{{- else if $nvs.sightIr }}
+				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" ($nvs.sightIr.resolution)) -}} </td>
+			{{- else }}
+				<td></td>
+			{{- end }}
+			{{- if $nvs.pilotThermal }} <!-- pilot -->
+				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" ($nvs.pilotThermal.resolution)) -}} </td>
+			{{- else if $nvs.pilotIr }}
+				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" ($nvs.pilotIr.resolution)) -}} </td>
+			{{- else }}
+				<td></td>
+			{{- end }}
+			{{- if $nvs.sightTPodThermal }} <!-- sightTPod -->
+				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" ($nvs.sightTPodThermal.resolution)) -}} </td>
+			{{- else if $nvs.sightTPodIr }}
+				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" ($nvs.sightTPodIr.resolution)) -}} </td>
+			{{- else }}
+				<td></td>
+			{{- end }}
+		</tr>
+	{{- end }}
+{{- end }}
+</table>
