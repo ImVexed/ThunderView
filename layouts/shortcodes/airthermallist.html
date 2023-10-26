@@ -1,9 +1,9 @@
 {{- $nation := .Get "nation"}}
 {{- $entries := slice}}
 {{- range $i, $val := $.Site.Data.gamedata.flightmodels }}
-	{{- if and $val.model (not (in $i "_killstreak"))  }}
-		{{- $unittag := index $.Site.Data.config.unittags $val.model }}
-		{{- if and $unittag.tags (index $unittag.tags (printf "country_%s" $nation)) }}
+	{{- if and $i (not (in $i "_killstreak"))  }}
+		{{- $unittag := index $.Site.Data.config.unittags $i }}
+		{{- if and (and $unittag.tags (index $unittag.tags (printf "country_%s" $nation))) (not $unittag.tags.type_strike_ucav) }}
 			{{- $hasNvs := .modifications.heli_night_vision_system}}
 			{{- if not $hasNvs }}
 				{{- $hasNvs = .nightVision}}
@@ -43,12 +43,14 @@
 				<a href="https://wiki.warthunder.com/{{- strings.Replace $name " " "_" -1 -}}" target="_blank">{{- $name}}</a>
 			</td>
 			<td style="vertical-align:middle;">
-				{{- $unittag := index $.Site.Data.config.unittags .val.model }}
+				{{- $unittag := index $.Site.Data.config.unittags .i }}
 				
 				{{- if eq $unittag.type "aircraft" }}
 					<img style="width:1.2rem;" src="/airplane.svg">
 				{{- else if eq $unittag.type "helicopter"}}
 					<img style="width:1.2rem;" src="/heli.svg">
+				{{- else }}
+					{{- $unittag.type }}
 				{{- end}}
 			</td>
 			<td style="width:3rem;vertical-align:middle;"> 

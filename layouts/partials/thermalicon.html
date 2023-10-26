@@ -3,6 +3,9 @@
 	{{- if eq (len (intersect .resolution (slice 500 300))) 2}}
 		{{- $gen = 1 }}
 	{{- end }}
+	{{- if eq (len (intersect .resolution (slice 800 500))) 2}}
+		{{- $gen = 2 }}
+	{{- end }}
 	{{- if eq (len (intersect .resolution (slice 800 600))) 2}}
 		{{- $gen = 2 }}
 	{{- end }}
