@@ -38,159 +38,157 @@ https://github.com/ImVexed/ThunderView/issues
 			<th>IRST Range</th>
 		</tr>
 		{{- range sort $entries "br" "desc" }}
-		{{- $name := partial "tankname.html" (dict "tankname" .i "presetname" (strings.TrimSuffix "_default"
-		.val.weapon_presets.preset.name)) }}
-		{{- if $name }}
-		{{- $searchRadar := .val.sensors }}
-		{{- $commonRadar := .val.sensors }}
-		{{- $trackRadar := .val.sensors }}
-		{{- $irstTrack := .val.sensors }}
+			{{- $name := partial "tankname.html" (dict "tankname" .i "presetname" (strings.TrimSuffix "_default" .val.weapon_presets.preset.name)) }}
+			{{- if $name }}
+				{{- $searchRadar := .val.sensors }}
+				{{- $trackRadar := .val.sensors }}
+				{{- $irstTrack := .val.sensors }}
 
-		{{- $sensorName := "" }}
-		{{ $type := (printf "%T" .val.sensors.sensor) }}
+				{{- $sensorName := "" }}
+				{{ $type := (printf "%T" .val.sensors.sensor) }}
 
-		{{- $sensors := .val.sensors.sensor }}
+				{{- $sensors := .val.sensors.sensor }}
 
-		{{- if not (eq $type "[]interface {}") }}
-		{{- $sensors = slice $sensors }}
-		{{- end }}
+				{{- if not (eq $type "[]interface {}") }}
+					{{- $sensors = slice $sensors }}
+				{{- end }}
 
-		{{- range $sensor := $sensors }}
-		{{- $sensorName = (strings.TrimPrefix "gameData/sensors/" (strings.TrimSuffix ".blk" $sensor.blk)) }}
+				{{- range $sensor := $sensors }}
+					{{- $sensorName = (strings.TrimPrefix "gameData/sensors/" (strings.TrimSuffix ".blk" $sensor.blk)) }}
 
-		{{- $sensorData := (index $.Site.Data.gamedata.sensors $sensorName) }}
+					{{- $sensorData := (index $.Site.Data.gamedata.sensors $sensorName) }}
 
-		{{- if $sensorData }}
-		{{- if $sensorData.transivers.search}}
-		{{- $searchRadar = $sensorData }}
-		{{- end }}
-		{{- if $sensorData.transivers.common}}
-		{{- $commonRadar = $sensorData }}
-		{{- end }}
-		{{- if $sensorData.transivers.radarTrack }}
-		{{- $trackRadar = $sensorData.transivers.radarTrack }}
-		{{- end }}
-		{{- if $sensorData.transivers.track }}
-		{{- $trackRadar = $sensorData.transivers.track }}
-		{{- end }}
-		{{- if $sensorData.transivers.irstTrack }}
-		{{- $irstTrack = $sensorData }}
-		{{- end }}
-		{{- end }}
-		{{- end }}
+					{{- if $sensorData }}
+						{{- if $sensorData.transivers.search}}
+							{{- $searchRadar = $sensorData }}
+						{{- end }}
+						{{- if $sensorData.transivers.common}}
+							{{- $searchRadar = $sensorData }}
+						{{- end }}
+						{{- if $sensorData.transivers.radarTrack }}
+							{{- $trackRadar = $sensorData.transivers.radarTrack }}
+						{{- end }}
+						{{- if $sensorData.transivers.track }}
+							{{- $trackRadar = $sensorData.transivers.track }}
+						{{- end }}
+						{{- if $sensorData.transivers.irstTrack }}
+							{{- $irstTrack = $sensorData }}
+						{{- end }}
+					{{- end }}
+				{{- end }}
 
-		{{- $widestPattern := .val.sensors }}
+				{{- $widestPattern := .val.sensors }}
 
-		{{- if $commonRadar.transivers }}
-		{{- if $commonRadar.scanPatterns.search }}
-		{{- $widestPattern = $commonRadar.scanPatterns.search }}
-		{{- end }}
+				{{- if $searchRadar.transivers }}
+					{{- if $searchRadar.scanPatterns.search }}
+						{{- $widestPattern = $searchRadar.scanPatterns.search }}
+					{{- end }}
 
-		{{- if $commonRadar.scanPatterns.searchWide }}
-		{{- $widestPattern = $commonRadar.scanPatterns.searchWide }}
-		{{- end }}
+					{{- if $searchRadar.scanPatterns.searchWide }}
+						{{- $widestPattern = $searchRadar.scanPatterns.searchWide }}
+					{{- end }}
 
-		{{- if $commonRadar.scanPatterns.search360 }}
-		{{- $widestPattern = $commonRadar.scanPatterns.search360 }}
-		{{- end }}
-		{{- else if $searchRadar.transivers }}
-		{{- if $searchRadar.scanPatterns.search }}
-		{{- $widestPattern = $searchRadar.scanPatterns.search }}
-		{{- end }}
+					{{- if $searchRadar.scanPatterns.search360 }}
+						{{- $widestPattern = $searchRadar.scanPatterns.search360 }}
+					{{- end }}
+				{{- else if $searchRadar.transivers }}
+					{{- if $searchRadar.scanPatterns.search }}
+						{{- $widestPattern = $searchRadar.scanPatterns.search }}
+					{{- end }}
 
-		{{- if $searchRadar.scanPatterns.searchWide }}
-		{{- $widestPattern = $searchRadar.scanPatterns.searchWide }}
-		{{- end }}
+					{{- if $searchRadar.scanPatterns.searchWide }}
+						{{- $widestPattern = $searchRadar.scanPatterns.searchWide }}
+					{{- end }}
 
-		{{- if $searchRadar.scanPatterns.search360 }}
-		{{- $widestPattern = $searchRadar.scanPatterns.search360 }}
-		{{- end }}
-		{{- end }}
+					{{- if $searchRadar.scanPatterns.search360 }}
+						{{- $widestPattern = $searchRadar.scanPatterns.search360 }}
+					{{- end }}
+				{{- end }}
 
-		{{- $searchZoneAzimuthWidth := 0 }}
-		{{- $searchZoneElevationWidth := 0 }}
-		{{- $major := 0 }}
-		{{- $minor := 0 }}
-		{{- $rowMajor := true }}
+				{{- $searchZoneAzimuthWidth := 0 }}
+				{{- $searchZoneElevationWidth := 0 }}
+				{{- $major := 0 }}
+				{{- $minor := 0 }}
+				{{- $rowMajor := true }}
 
-		{{- if eq $widestPattern.type "cylinder" }}
-		{{- $major = 360 }}
-		{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
-		{{- $rowMajor = $widestPattern.rowMajor }}
-		{{- else if eq $widestPattern.type "pyramide" }}
-		{{- $major = (mul 2 $widestPattern.width)}}
-		{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
-		{{- $rowMajor = $widestPattern.rowMajor }}
-		{{- else if eq $widestPattern.type "cone" }}
-		{{- $major = (mul 2 $widestPattern.width)}}
-		{{- $minor = $major }}
-		{{- end }}
+				{{- if eq $widestPattern.type "cylinder" }}
+					{{- $major = 360 }}
+					{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
+					{{- $rowMajor = $widestPattern.rowMajor }}
+				{{- else if eq $widestPattern.type "pyramide" }}
+					{{- $major = (mul 2 $widestPattern.width)}}
+					{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
+					{{- $rowMajor = $widestPattern.rowMajor }}
+				{{- else if eq $widestPattern.type "cone" }}
+					{{- $major = (mul 2 $widestPattern.width)}}
+					{{- $minor = $major }}
+				{{- end }}
 
-		{{- if $rowMajor }}
-		{{- $searchZoneAzimuthWidth = $major }}
-		{{- $searchZoneElevationWidth = $minor }}
-		{{- else }}
-		{{- $searchZoneAzimuthWidth = $minor }}
-		{{- $searchZoneElevationWidth = $major }}
-		{{- end }}
+				{{- if $rowMajor }}
+					{{- $searchZoneAzimuthWidth = $major }}
+					{{- $searchZoneElevationWidth = $minor }}
+				{{- else }}
+					{{- $searchZoneAzimuthWidth = $minor }}
+					{{- $searchZoneElevationWidth = $major }}
+				{{- end }}
 
-		{{- $searchRange := 0 }}
-		{{- $ranges := slice}}
-		{{- if $commonRadar.transivers }}
-		{{- $ranges = $commonRadar.scopeRangeSets.common }}
-		{{- else if $searchRadar.scopeRanges }}
-		{{- $ranges = $searchRadar.scopeRanges }}
-		{{- else if $searchRadar.scopeRangeSets }}
-		{{- $ranges = $searchRadar.scopeRangeSets.common }}
-		{{- end }}
+				{{- $searchRange := 0 }}
+				{{- $ranges := slice}}
+				{{- if $searchRadar.scopeRanges }}
+					{{- $ranges = $searchRadar.scopeRanges }}
+				{{- else if $searchRadar.scopeRangeSets }}
+					{{- if $searchRadar.scopeRangeSets.search }}
+						{{- $ranges = $searchRadar.scopeRangeSets.search }}
+					{{- else if $searchRadar.scopeRangeSets.common }}
+						{{- $ranges = $searchRadar.scopeRangeSets.common }}
+					{{- end }}
+				{{- end }}
 
-		{{- range $range := $ranges }}
-		{{- if gt $range $searchRange }}
-		{{- $searchRange = $range }}
-		{{- end }}
-		{{- end }}
+				{{- range $range := $ranges }}
+					{{- if gt $range $searchRange }}
+						{{- $searchRange = $range }}
+					{{- end }}
+				{{- end }}
 
-		{{- if and (not (eq $searchRange 0)) $widestPattern.azimuthLimits }}
-		{{- $searchRadars = $searchRadars | append (dict "name" $name "maxElevation" $searchZoneElevationWidth
-		"maxRange"
-		$searchRange )}}
-		{{- end }}
+				{{- if and (not (eq $searchRange 0)) $widestPattern.azimuthLimits }}
+					{{- $searchRadars = $searchRadars | append (dict "name" $name "maxElevation" $searchZoneElevationWidth "maxRange" $searchRange )}}
+				{{- end }}
 
-		<tr>
-			<td>{{ $name }}</td>
-			<td>{{ .br }}</td>
-			{{- if eq $searchRange 0 }}
-			<td></td>
-			{{- else }}
-			<td>{{- math.Round (div $searchRange 1000) }}km</td>
+				<tr>
+					<td>{{ $name }}</td>
+					<td>{{ .br }}</td>
+					{{- if eq $searchRange 0 }}
+						<td></td>
+					{{- else }}
+						<td>{{- math.Round (div $searchRange 1000) }}km</td>
+					{{- end }}
+					{{- if $widestPattern.azimuthLimits }}
+						<td>{{ $searchZoneAzimuthWidth }}x{{ $searchZoneElevationWidth }}</td>
+					{{- else }}
+						<td></td>
+					{{- end }}
+						{{- if $widestPattern.azimuthLimits }}
+					<td>{{ $widestPattern.period }}s</td>
+					{{- else }}
+						<td></td>
+					{{- end }}
+					{{- if $trackRadar.rangeMax }}
+						<td>{{ div $trackRadar.rangeMax 1000 }}km</td>
+					{{- else }}
+						<td></td>
+					{{- end }}
+					{{- if $trackRadar.power }}
+						<td> {{ $trackRadar.power }} </td>
+					{{- else }}
+						<td></td>
+					{{- end }}
+					{{- if $irstTrack.transivers }}
+						<td>{{ div $irstTrack.transivers.irstTrack.rangeMax 1000 }}km</td>
+					{{- else }}
+						<td></td>
+					{{- end }}
+				</tr>
 			{{- end }}
-			{{- if $widestPattern.azimuthLimits }}
-			<td>{{ $searchZoneAzimuthWidth }}x{{ $searchZoneElevationWidth }}</td>
-			{{- else }}
-			<td></td>
-			{{- end }}
-			{{- if $widestPattern.azimuthLimits }}
-			<td>{{ $widestPattern.period }}s</td>
-			{{- else }}
-			<td></td>
-			{{- end }}
-			{{- if $trackRadar.rangeMax }}
-			<td>{{ div $trackRadar.rangeMax 1000 }}km</td>
-			{{- else }}
-			<td></td>
-			{{- end }}
-			{{- if $trackRadar.power }}
-			<td> {{ $trackRadar.power }} </td>
-			{{- else }}
-			<td></td>
-			{{- end }}
-			{{- if $irstTrack.transivers }}
-			<td>{{ div $irstTrack.transivers.irstTrack.rangeMax 1000 }}km</td>
-			{{- else }}
-			<td></td>
-			{{- end }}
-		</tr>
-		{{- end }}
 		{{- end }}
 	</table>
 
