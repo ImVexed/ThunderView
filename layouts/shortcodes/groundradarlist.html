@@ -215,7 +215,7 @@ https://github.com/ImVexed/ThunderView/issues
 	{{- range $radar := $searchRadars }}
 	{
 		name: "{{- $radar.name }}",
-			maxRange: {{- $radar.maxRange }},
+		maxRange: {{- $radar.maxRange }},
 		maxElevation: {{- $radar.maxElevation }}
 	},
 	{{- end }}
@@ -261,21 +261,34 @@ https://github.com/ImVexed/ThunderView/issues
 		return Math.sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8));
 	}
 
+	// Generate points for the radar's cone of coverage
+	function generateRadarCoveragePoints(radar) {
+		const points = [];
+		const elevationRadians = radar.maxElevation * (Math.PI / 180);
+		const range = radar.maxRange;
+
+		// Calculate points along the arc representing the cone of coverage
+		const arcResolution = 1000; // How many points to calculate along the arc
+		for (let i = 0; i <= arcResolution; i++) {
+			// Interpolate angle from 0 to maxElevation
+			const angleFraction = i / arcResolution;
+			const currentAngle = angleFraction * elevationRadians;
+			const x = range * Math.cos(currentAngle);
+			const y = range * Math.sin(currentAngle);
+			points.push({ x: x, y: y });
+		}
+
+		// Connect back to the origin to complete the cone shape
+		points.push({ x: 0, y: 0 });
+
+		return points;
+	}
+
+
+
 	function generateRadarDatasets(radars) {
 		return radars.map((radar) => {
-			const data = [];
-
-			// Add starting point of the triangle (origin)
-			data.push({ x: 0, y: 0 });
-
-			// Add the top point of the triangle
-			const rangeTop = radar.maxRange * Math.cos((radar.maxElevation * Math.PI) / 180);
-			const elevationTop = radar.maxRange * Math.sin((radar.maxElevation * Math.PI) / 180);
-			data.push({ x: radar.maxRange, y: elevationTop });
-
-			// Add the end point of the triangle (back to origin along the x-axis)
-			data.push({ x: radar.maxRange, y: 0 });
-
+			const data = generateRadarCoveragePoints(radar);
 			const colors = getRandomColor(previousColors);
 
 			return {
@@ -286,9 +299,9 @@ https://github.com/ImVexed/ThunderView/issues
 				hoverBackgroundColor: colors.backgroundColor,
 				fill: true,
 				showLine: true,
-				pointRadius: 5,
-				pointHoverRadius: 5,
-				tension: 0,
+				pointRadius: 0, // Hide the points
+				pointHoverRadius: 0, // Hide the points on hover
+				tension: 0.4, // Slight curve
 			};
 		});
 	}
@@ -309,6 +322,7 @@ https://github.com/ImVexed/ThunderView/issues
 		},
 		options: {
 			responsive: true,
+			maintainAspectRatio: false,
 			scales: {
 				x: {
 					min: 0,
@@ -320,7 +334,7 @@ https://github.com/ImVexed/ThunderView/issues
 				},
 				y: {
 					min: 0,
-					max: maxElevationOverDistance,
+					max: maxElevationOverDistance, // Adjust if necessary to maintain proportionality
 					title: {
 						display: true,
 						text: "Elevation (m)",
@@ -361,7 +375,7 @@ https://github.com/ImVexed/ThunderView/issues
 							const range = point.x.toFixed(2);
 							const radarName = context.dataset.label;
 							const radar = radars.find(radar => radar.name === radarName);
-							const elevation = radar.maxElevation.toFixed(2);
+							const elevation = point.y.toFixed(2);
 							return `${radarName}: Range: ${Math.round(range)}m, Elevation: ${elevation}°`;
 						},
 					},
