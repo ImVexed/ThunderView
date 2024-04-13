@@ -1,7 +1,7 @@
 {{- $entries := slice}}
 {{- range $i, $val := $.Site.Data.gamedata.units.tankmodels }}
 	{{- if and (not (in $i "_race")) (not (in $i "_cup"))}}
-		{{- if and (eq .type "typeSPAA") (.sensors) }}
+		{{- if and (.onRadarAs) (.sensors) }}
 			{{- $cost := 0 }}
 			{{- $presetname := (strings.TrimSuffix "_default" $val.weapon_presets.preset.name) }}
 
@@ -80,6 +80,13 @@ https://github.com/ImVexed/ThunderView/issues
 				{{- $widestPattern := .val.sensors }}
 
 				{{- if $searchRadar.transivers }}
+					{{- if $searchRadar.scanPatterns.search4 }}
+						{{- $widestPattern = $searchRadar.scanPatterns.search4 }}
+					{{- end }}
+					{{- if $searchRadar.scanPatterns.searchNarrow }}
+						{{- $widestPattern = $searchRadar.scanPatterns.searchNarrow }}
+					{{- end }}
+
 					{{- if $searchRadar.scanPatterns.search }}
 						{{- $widestPattern = $searchRadar.scanPatterns.search }}
 					{{- end }}
@@ -92,6 +99,13 @@ https://github.com/ImVexed/ThunderView/issues
 						{{- $widestPattern = $searchRadar.scanPatterns.search360 }}
 					{{- end }}
 				{{- else if $searchRadar.transivers }}
+					{{- if $searchRadar.scanPatterns.search4 }}
+						{{- $widestPattern = $searchRadar.scanPatterns.search4 }}
+					{{- end }}
+					{{- if $searchRadar.scanPatterns.searchNarrow }}
+						{{- $widestPattern = $searchRadar.scanPatterns.searchNarrow }}
+					{{- end }}
+
 					{{- if $searchRadar.scanPatterns.search }}
 						{{- $widestPattern = $searchRadar.scanPatterns.search }}
 					{{- end }}
@@ -154,40 +168,42 @@ https://github.com/ImVexed/ThunderView/issues
 					{{- $searchRadars = $searchRadars | append (dict "name" $name "maxElevation" $searchZoneElevationWidth "maxRange" $searchRange )}}
 				{{- end }}
 
-				<tr>
-					<td>{{ $name }}</td>
-					<td>{{ .br }}</td>
-					{{- if eq $searchRange 0 }}
-						<td></td>
-					{{- else }}
-						<td>{{- math.Round (div $searchRange 1000) }}km</td>
-					{{- end }}
-					{{- if $widestPattern.azimuthLimits }}
-						<td>{{ $searchZoneAzimuthWidth }}x{{ $searchZoneElevationWidth }}</td>
-					{{- else }}
-						<td></td>
-					{{- end }}
+				{{- if (gt $searchRange 0)}}
+					<tr>
+						<td>{{ $name }}</td>
+						<td>{{ .br }}</td>
+						{{- if eq $searchRange 0 }}
+							<td></td>
+						{{- else }}
+							<td>{{- math.Round (div $searchRange 1000) }}km</td>
+						{{- end }}
 						{{- if $widestPattern.azimuthLimits }}
-					<td>{{ $widestPattern.period }}s</td>
-					{{- else }}
-						<td></td>
-					{{- end }}
-					{{- if $trackRadar.rangeMax }}
-						<td>{{ div $trackRadar.rangeMax 1000 }}km</td>
-					{{- else }}
-						<td></td>
-					{{- end }}
-					{{- if $trackRadar.power }}
-						<td> {{ $trackRadar.power }} </td>
-					{{- else }}
-						<td></td>
-					{{- end }}
-					{{- if $irstTrack.transivers }}
-						<td>{{ div $irstTrack.transivers.irstTrack.rangeMax 1000 }}km</td>
-					{{- else }}
-						<td></td>
-					{{- end }}
-				</tr>
+							<td>{{ $searchZoneAzimuthWidth }}x{{ $searchZoneElevationWidth }}</td>
+						{{- else }}
+							<td></td>
+						{{- end }}
+							{{- if $widestPattern.azimuthLimits }}
+						<td>{{ $widestPattern.period }}s</td>
+						{{- else }}
+							<td></td>
+						{{- end }}
+						{{- if $trackRadar.rangeMax }}
+							<td>{{ div $trackRadar.rangeMax 1000 }}km</td>
+						{{- else }}
+							<td></td>
+						{{- end }}
+						{{- if $trackRadar.power }}
+							<td> {{ $trackRadar.power }} </td>
+						{{- else }}
+							<td></td>
+						{{- end }}
+						{{- if $irstTrack.transivers }}
+							<td>{{ div $irstTrack.transivers.irstTrack.rangeMax 1000 }}km</td>
+						{{- else }}
+							<td></td>
+						{{- end }}
+					</tr>
+				{{- end}}
 			{{- end }}
 		{{- end }}
 	</table>
