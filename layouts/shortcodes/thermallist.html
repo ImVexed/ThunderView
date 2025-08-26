@@ -9,6 +9,9 @@
 					{{- $hasNvs = $val }}
 				{{- end }}
 			{{- end }}
+			{{- if not $hasNvs }}
+				{{- $hasNvs = .modifications.night_vision_system_upgrade_nv_to_thermal }}
+			{{- end }}
 			{{- if $hasNvs}}
 				{{- $cost := 0 }}
 				{{- $presetname := (strings.TrimSuffix "_default" $val.weapon_presets.preset.name) }}
