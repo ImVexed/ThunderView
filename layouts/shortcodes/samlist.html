@@ -1,11 +1,47 @@
 {{- $sams := slice }}
 {{- range $i, $val := $.Site.Data.gamedata.weapons.groundmodels_weapons  }}
-	{{- if .bullet }}
-		{{- if gt (len .bullet) 5}}
-			{{- if eq .bullet.bulletType "sam_tank" }}
-				{{- $name := partial "missilename.html" (dict "missilename" .bullet.bulletName) }}
+	{{- if and .bullet (gt (len .bullet) 5) (eq .bullet.bulletType "sam_tank") }}
+		{{- $name := partial "missilename.html" (dict "missilename" .bullet.bulletName) }}
+		{{- if not $name }}{{- $name = .bullet.bulletName }}{{- end }}
+		{{- if $name }}
+			{{- $found := false }}
+			{{- range $j, $sam := $sams }}
+				{{- if eq $sam.name $name }}
+					{{- $found = true }}
+				{{- end }}
+			{{- end }}
+			{{- if not $found }}
+				{{- with .bullet.rocket }}
+					{{- $sams = $sams | append (dict "name" $name "val" .) }}
+				{{- end }}
+			{{- end }}
+		{{- end }}
+	{{- end }}
+
+	{{- if and .rocket (gt (len .rocket) 5) (eq .rocket.bulletType "sam_tank") }}
+		{{- $name := partial "missilename.html" (dict "missilename" .rocket.bulletName) }}
+		{{- if not $name }}{{- $name = .rocket.bulletName }}{{- end }}
+		{{- if $name }}
+			{{- $found := false }}
+			{{- range $j, $sam := $sams }}
+				{{- if eq $sam.name $name }}
+					{{- $found = true }}
+				{{- end }}
+			{{- end }}
+			{{- if not $found }}
+				{{- $sams = $sams | append (dict "name" $name "val" .rocket) }}
+			{{- end }}
+		{{- end }}
+	{{- end }}
+
+	{{- range $k, $sub := $val }}
+		{{- if strings.HasSuffix $k "_aam" }}
+			{{- $bullet := (index $sub "bullet") }}
+			{{- with $bullet }}
+				{{- if and (gt (len .) 5) (eq .bulletType "sam_tank") }}
+					{{- $name := partial "missilename.html" (dict "missilename" .bulletName) }}
+					{{- if not $name }}{{- $name = .bulletName }}{{- end }}
 					{{- if $name }}
-						<!-- Make sure we don't already have a missile with the same name  -->
 						{{- $found := false }}
 						{{- range $j, $sam := $sams }}
 							{{- if eq $sam.name $name }}
@@ -13,14 +49,16 @@
 							{{- end }}
 						{{- end }}
 						{{- if not $found }}
-							{{- $sams = $sams | append (dict "name" $name "val" .bullet) }}
-						
+							{{- with .rocket }}
+								{{- $sams = $sams | append (dict "name" $name "val" .) }}
+							{{- end }}
 						{{- end }}
 					{{- end }}
 				{{- end }}
 			{{- end }}
 		{{- end }}
 	{{- end }}
+{{- end }}
 
 <table class="spaced" style="background: #141e24; min-width: max-content;margin: 0.3rem;">
 	<tr>
@@ -33,36 +71,36 @@
 	  <th>Leading</th> 
 	</tr>
 <!-- Sort the missiles by loadFactorMax -->
-{{- range sort $sams "val.rocket.loadFactorMax" }}
+{{- range sort $sams "val.loadFactorMax" }}
 <tr>
 	<td style="text-align: left;position:relative;width:7rem;vertical-align:middle;text-overflow: ellipsis;overflow:hidden;white-space: nowrap;">
 		{{- .name -}}
 	</td>
 	<td style="width:5rem;">
-		{{- if .val.rocket.loadFactorMax }}
-			{{- .val.rocket.loadFactorMax }}G
+		{{- if .val.loadFactorMax }}
+			{{- .val.loadFactorMax }}G
 		{{- end }}
 	</td>
 	<td style="width:5rem;">
-		{{- .val.rocket.endSpeed }}m/s
+		{{- .val.endSpeed }}m/s
 	</td>
 	<td style="width:8rem;">
-		{{- if .val.rocket.explosiveType }}
-			{{- $equiv := (index $.Site.Data.gamedata.damage_model.explosive.explosiveTypes .val.rocket.explosiveType)}}
-			{{- partial "round.html" (dict "num" (mul $equiv.strengthEquivalent .val.rocket.explosiveMass) "power" 2 )}}Kg TNT
+		{{- if .val.explosiveType }}
+			{{- $equiv := (index $.Site.Data.gamedata.damage_model.explosive.explosiveTypes .val.explosiveType)}}
+			{{- partial "round.html" (dict "num" (mul $equiv.strengthEquivalent .val.explosiveMass) "power" 2 )}}Kg TNT
 		{{- end }}
 	</td>
 	<td style="width:5rem;">
-		{{- .val.rocket.maxDistance }}m
+		{{- .val.maxDistance }}m
 	</td>
 	<td style="width:4rem;">
-		{{- if .val.rocket.proximityFuse }}
-			{{- .val.rocket.proximityFuse.radius }}m
+		{{- if .val.proximityFuse }}
+			{{- .val.proximityFuse.radius }}m
 		{{- end }}
 	</td>
 	<td style="width:5rem;">
-		{{- if .val.rocket.guidance }}
-			{{- .val.rocket.guidance.leading }}
+		{{- if .val.guidance }}
+			{{- .val.guidance.leading }}
 		{{- end }}
 	</td>
 </tr>

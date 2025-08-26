@@ -1,8 +1,12 @@
 {{ $name := (print .missilename)}}
 {{ $value := 0 }}
+{{ $candidates := slice $name (print "weapons/" $name) (print "weapons/" $name "/short") }}
 {{ range $i, $r := getCSV ";" "War-Thunder-Datamine/lang.vromfs.bin_u/lang/units_weaponry.csv" }}
-	{{ if eq (index $r 0) $name}}
-		{{ $value = (index $r 1) }}
+	{{ $key := (index $r 0) }}
+	{{ range $candidates }}
+		{{ if eq $key . }}
+			{{ $value = (index $r 1) }}
+		{{ end }}
 	{{ end }}
 {{ end }}
 
