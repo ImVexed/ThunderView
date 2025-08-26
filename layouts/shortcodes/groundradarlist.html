@@ -27,7 +27,7 @@
 This information probably isn't completely correct. If you find something incorrect please report it on github here:
 https://github.com/ImVexed/ThunderView/issues
 <div style="display: flex; max-width: 50vw;">
-	<table id="radarlist" class="spaced" style="background: #141e24; min-width: max-content;margin: 0.3rem;">
+	<table id="radarlist" class="spaced" data-sortable="true" style="background: #141e24; min-width: max-content;margin: 0.3rem;">
 		<tr>
 			<th>Vehicle</th>
 			<th>BR</th>
@@ -177,37 +177,39 @@ https://github.com/ImVexed/ThunderView/issues
 
 		{{- range sort $rowEntries "searchRange" "desc"}}
 			<tr>
-				<td>{{ .name }}</td>
-				<td>{{ .br }}</td>
-				<td>{{- math.Round (div .searchRange 1000) }}km</td>
-				{{- if .widestPattern.azimuthLimits }}
-					<td>{{ .searchZoneAzimuthWidth }}x{{ .searchZoneElevationWidth }}</td>
-				{{- else }}
-					<td></td>
-				{{- end }}
+				<td data-sort-value="{{ .name }}">{{ .name }}</td>
+				<td data-sort-value="{{ .br }}">{{ .br }}</td>
+				<td data-sort-value="{{ .searchRange }}">{{- math.Round (div .searchRange 1000) }}km</td>
+				<td data-sort-value="{{ if .widestPattern.azimuthLimits }}{{ mul .searchZoneAzimuthWidth .searchZoneElevationWidth }}{{ else }}0{{ end }}">
 					{{- if .widestPattern.azimuthLimits }}
-				<td>{{ .widestPattern.period }}s</td>
-				{{- else }}
-					<td></td>
-				{{- end }}
-				{{- if .trackRadar.rangeMax }}
-					<td>{{ div .trackRadar.rangeMax 1000 }}km</td>
-				{{- else }}
-					<td></td>
-				{{- end }}
-				{{- if .trackRadar.power }}
-					<td> {{ .trackRadar.power }} </td>
-				{{- else }}
-					<td></td>
-				{{- end }}
-				{{- if .irstTrack.transivers }}
-					<td>{{ div .irstTrack.transivers.irstTrack.rangeMax 1000 }}km</td>
-				{{- else }}
-					<td></td>
-				{{- end }}
+						{{ .searchZoneAzimuthWidth }}x{{ .searchZoneElevationWidth }}
+					{{- end }}
+				</td>
+				<td data-sort-value="{{ if .widestPattern.azimuthLimits }}{{ .widestPattern.period }}{{ else }}0{{ end }}">
+					{{- if .widestPattern.azimuthLimits }}
+						{{ .widestPattern.period }}s
+					{{- end }}
+				</td>
+				<td data-sort-value="{{ if .trackRadar.rangeMax }}{{ .trackRadar.rangeMax }}{{ else }}0{{ end }}">
+					{{- if .trackRadar.rangeMax }}
+						{{ div .trackRadar.rangeMax 1000 }}km
+					{{- end }}
+				</td>
+				<td data-sort-value="{{ if .trackRadar.power }}{{ .trackRadar.power }}{{ else }}0{{ end }}">
+					{{- if .trackRadar.power }}
+						{{ .trackRadar.power }}
+					{{- end }}
+				</td>
+				<td data-sort-value="{{ if .irstTrack.transivers }}{{ .irstTrack.transivers.irstTrack.rangeMax }}{{ else }}0{{ end }}">
+					{{- if .irstTrack.transivers }}
+						{{ div .irstTrack.transivers.irstTrack.rangeMax 1000 }}km
+					{{- end }}
+				</td>
 			</tr>
 		{{- end }}
 	</table>
+
+{{ partial "table-sort.html" . }}
 
 	<canvas id="radarChart"></canvas>
 </div>

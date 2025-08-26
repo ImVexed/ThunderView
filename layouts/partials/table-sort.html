@@ -1,0 +1,137 @@
+<style>
+	table[data-sortable="true"] {
+		table-layout: auto;
+	}
+	table[data-sortable="true"] th {
+		position: relative;
+		padding-right: 2.5rem;
+		white-space: nowrap !important;
+	}
+	table[data-sortable="true"] th, table[data-sortable="true"] td {
+		vertical-align: middle !important;
+	}
+	table[data-sortable="true"] th::after {
+		content: '▲▼';
+		font-size: 0.65em;
+		opacity: 0.45;
+		position: absolute;
+		right: 0.25rem;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+	table[data-sortable="true"] th[aria-sort="ascending"]::after {
+		content: '▲';
+		opacity: 0.9;
+	}
+	table[data-sortable="true"] th[aria-sort="descending"]::after {
+		content: '▼';
+		opacity: 0.9;
+	}
+
+	/* SAM table specific sizing and layout (migrated from inline styles) */
+	table.spaced.sam-table {
+		background: #141e24;
+		min-width: max-content;
+		margin: 0.3rem;
+	}
+	table.sam-table td:first-child {
+		text-align: left;
+		position: relative;
+		vertical-align: middle;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+</style>
+<script>
+	(function() {
+		function getCellSortValue(cell) {
+			if (!cell) return { value: '', type: 'string' };
+			const attr = cell.getAttribute('data-sort-value');
+			const raw = (attr !== null ? attr : cell.textContent || '').toString().trim();
+			if (raw === '') return { value: '', type: 'string' };
+			const num = Number(raw.replace(/[^0-9.+-eE]/g, ''));
+			if (!Number.isNaN(num) && raw.match(/[0-9]/)) {
+				return { value: num, type: 'number' };
+			}
+			return { value: raw.toLowerCase(), type: 'string' };
+		}
+
+		function sortTable(table, columnIndex, direction) {
+			const rows = Array.from(table.querySelectorAll('tr'));
+			if (rows.length <= 1) return;
+			const headerRow = rows[0];
+			const bodyRows = rows.slice(1).map((row, idx) => {
+				const cell = row.children[columnIndex];
+				const key = getCellSortValue(cell);
+				return { row, key, idx };
+			});
+
+			const isAsc = direction === 'asc';
+			bodyRows.sort((a, b) => {
+				if (a.key.type === 'number' && b.key.type === 'number') {
+					return isAsc ? a.key.value - b.key.value : b.key.value - a.key.value;
+				}
+				if (a.key.value < b.key.value) return isAsc ? -1 : 1;
+				if (a.key.value > b.key.value) return isAsc ? 1 : -1;
+				return a.idx - b.idx;
+			});
+
+			const fragment = document.createDocumentFragment();
+			fragment.appendChild(headerRow);
+			bodyRows.forEach(item => fragment.appendChild(item.row));
+			table.innerHTML = '';
+			table.appendChild(fragment);
+		}
+
+		function clearHeaderIndicators(headers) {
+			headers.forEach(h => {
+				h.removeAttribute('data-sort-order');
+				h.setAttribute('aria-sort', 'none');
+			});
+		}
+
+		function setupTable(table) {
+			const headerRow = table.querySelector('tr');
+			if (!headerRow) return;
+			const headers = Array.from(headerRow.querySelectorAll('th'));
+			headers.forEach((th, index) => {
+				th.style.cursor = 'pointer';
+				th.setAttribute('role', 'button');
+				th.setAttribute('tabindex', '0');
+				th.setAttribute('aria-sort', 'none');
+
+				function triggerSort() {
+					const current = th.getAttribute('data-sort-order');
+					const next = current === 'asc' ? 'desc' : 'asc';
+					clearHeaderIndicators(headers);
+					th.setAttribute('data-sort-order', next);
+					th.setAttribute('aria-sort', next === 'asc' ? 'ascending' : 'descending');
+					console.debug('[table-sort]', { table: table.id || '(anonymous table)' , columnIndex: index, direction: next });
+					sortTable(table, index, next);
+				}
+
+				th.addEventListener('click', triggerSort);
+				th.addEventListener('keydown', function(ev) {
+					if (ev.key === 'Enter' || ev.key === ' ') {
+						ev.preventDefault();
+						triggerSort();
+					}
+				});
+			});
+		}
+
+		function init() {
+			const tables = document.querySelectorAll('table[data-sortable="true"]');
+			tables.forEach(setupTable);
+		}
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', init);
+		} else {
+			init();
+		}
+	})();
+</script>
+
