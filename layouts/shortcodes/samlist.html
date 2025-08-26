@@ -1,6 +1,7 @@
 {{- $sams := slice }}
+
 {{- range $i, $val := $.Site.Data.gamedata.weapons.groundmodels_weapons  }}
-	{{- if and .bullet (gt (len .bullet) 5) (eq .bullet.bulletType "sam_tank") }}
+	{{- if and .bullet (gt (len .bullet) 5) (or (eq .bullet.bulletType "sam_tank") (and .bullet.rocket (eq .bullet.rocket.bulletType "sam_tank"))) }}
 		{{- $name := partial "missilename.html" (dict "missilename" .bullet.bulletName) }}
 		{{- if not $name }}{{- $name = .bullet.bulletName }}{{- end }}
 		{{- if $name }}
@@ -12,12 +13,13 @@
 			{{- end }}
 			{{- if not $found }}
 				{{- with .bullet.rocket }}
-					{{- $sams = $sams | append (dict "name" $name "val" .) }}
+					{{- if or (not .proximityFuse) (and .proximityFuse.detectAirUnits (not .proximityFuse.detectGroundUnits) (not .proximityFuse.detectGround)) }}
+						{{- $sams = $sams | append (dict "name" $name "val" .) }}
+					{{- end }}
 				{{- end }}
 			{{- end }}
 		{{- end }}
 	{{- end }}
-
 	{{- if and .rocket (gt (len .rocket) 5) (eq .rocket.bulletType "sam_tank") }}
 		{{- $name := partial "missilename.html" (dict "missilename" .rocket.bulletName) }}
 		{{- if not $name }}{{- $name = .rocket.bulletName }}{{- end }}
@@ -29,7 +31,9 @@
 				{{- end }}
 			{{- end }}
 			{{- if not $found }}
-				{{- $sams = $sams | append (dict "name" $name "val" .rocket) }}
+				{{- if or (not .rocket.proximityFuse) (and .rocket.proximityFuse.detectAirUnits (not .rocket.proximityFuse.detectGroundUnits) (not .rocket.proximityFuse.detectGround)) }}
+					{{- $sams = $sams | append (dict "name" $name "val" .rocket) }}
+				{{- end }}
 			{{- end }}
 		{{- end }}
 	{{- end }}
@@ -38,7 +42,7 @@
 		{{- if strings.HasSuffix $k "_aam" }}
 			{{- $bullet := (index $sub "bullet") }}
 			{{- with $bullet }}
-				{{- if and (gt (len .) 5) (eq .bulletType "sam_tank") }}
+				{{- if and (gt (len .) 5) (or (eq .bulletType "sam_tank") (and .rocket (eq .rocket.bulletType "sam_tank"))) }}
 					{{- $name := partial "missilename.html" (dict "missilename" .bulletName) }}
 					{{- if not $name }}{{- $name = .bulletName }}{{- end }}
 					{{- if $name }}
@@ -50,7 +54,9 @@
 						{{- end }}
 						{{- if not $found }}
 							{{- with .rocket }}
-								{{- $sams = $sams | append (dict "name" $name "val" .) }}
+								{{- if or (not .proximityFuse) (and .proximityFuse.detectAirUnits (not .proximityFuse.detectGroundUnits) (not .proximityFuse.detectGround)) }}
+									{{- $sams = $sams | append (dict "name" $name "val" .) }}
+								{{- end }}
 							{{- end }}
 						{{- end }}
 					{{- end }}
