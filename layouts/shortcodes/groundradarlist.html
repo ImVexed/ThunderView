@@ -264,6 +264,9 @@ https://github.com/ImVexed/ThunderView/issues
 		return Math.sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8));
 	}
 
+	// Whether to use a logarithmic scale on the Y axis (normalized view)
+	const useLogScale = true;
+
 	// Generate points for the radar's cone of coverage
 	function generateRadarCoveragePoints(radar) {
 		const points = [];
@@ -278,11 +281,12 @@ https://github.com/ImVexed/ThunderView/issues
 			const currentAngle = angleFraction * elevationRadians;
 			const x = range * Math.cos(currentAngle);
 			const y = range * Math.sin(currentAngle);
-			points.push({ x: x, y: y });
+			const adjustedY = useLogScale ? Math.max(y, 1) : y;
+			points.push({ x: x, y: adjustedY });
 		}
 
 		// Connect back to the origin to complete the cone shape
-		points.push({ x: 0, y: 0 });
+		points.push({ x: 0, y: useLogScale ? 1 : 0 });
 
 		return points;
 	}
@@ -313,10 +317,8 @@ https://github.com/ImVexed/ThunderView/issues
 	// Order radars by max range
 	radars.sort((a, b) => b.maxRange - a.maxRange);
 	const maxRange = Math.max(...radars.map((radar) => radar.maxRange));
-	const radarWithHighestElevation = radars.reduce((prev, current) => {
-		return prev.maxElevation > current.maxElevation ? prev : current;
-	});
-	const maxElevationOverDistance = radarWithHighestElevation.maxRange * Math.sin((radarWithHighestElevation.maxElevation * Math.PI) / 180);
+	// True max Y is the maximum of range * sin(elevation) across ALL radars
+	const maxElevationOverDistance = Math.max(...radars.map(r => r.maxRange * Math.sin((r.maxElevation * Math.PI) / 180)));
 
 	const radarChart = new Chart(ctx, {
 		type: "scatter",
@@ -336,8 +338,8 @@ https://github.com/ImVexed/ThunderView/issues
 					},
 				},
 				y: {
-					min: 0,
-					max: maxElevationOverDistance, // Adjust if necessary to maintain proportionality
+					min: 1,
+					max: Math.max(1, maxElevationOverDistance),
 					title: {
 						display: true,
 						text: "Elevation (m)",
