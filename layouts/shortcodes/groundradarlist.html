@@ -79,72 +79,40 @@ https://github.com/ImVexed/ThunderView/issues
 				{{- end }}
 
 				{{- $widestPattern := .val.sensors }}
-
-				{{- if $searchRadar.transivers }}
-					{{- if $searchRadar.scanPatterns.search4 }}
-						{{- $widestPattern = $searchRadar.scanPatterns.search4 }}
-					{{- end }}
-					{{- if $searchRadar.scanPatterns.searchNarrow }}
-						{{- $widestPattern = $searchRadar.scanPatterns.searchNarrow }}
-					{{- end }}
-
-					{{- if $searchRadar.scanPatterns.search }}
-						{{- $widestPattern = $searchRadar.scanPatterns.search }}
-					{{- end }}
-
-					{{- if $searchRadar.scanPatterns.searchWide }}
-						{{- $widestPattern = $searchRadar.scanPatterns.searchWide }}
-					{{- end }}
-
-					{{- if $searchRadar.scanPatterns.search360 }}
-						{{- $widestPattern = $searchRadar.scanPatterns.search360 }}
-					{{- end }}
-				{{- else if $searchRadar.transivers }}
-					{{- if $searchRadar.scanPatterns.search4 }}
-						{{- $widestPattern = $searchRadar.scanPatterns.search4 }}
-					{{- end }}
-					{{- if $searchRadar.scanPatterns.searchNarrow }}
-						{{- $widestPattern = $searchRadar.scanPatterns.searchNarrow }}
-					{{- end }}
-
-					{{- if $searchRadar.scanPatterns.search }}
-						{{- $widestPattern = $searchRadar.scanPatterns.search }}
-					{{- end }}
-
-					{{- if $searchRadar.scanPatterns.searchWide }}
-						{{- $widestPattern = $searchRadar.scanPatterns.searchWide }}
-					{{- end }}
-
-					{{- if $searchRadar.scanPatterns.search360 }}
-						{{- $widestPattern = $searchRadar.scanPatterns.search360 }}
-					{{- end }}
-				{{- end }}
-
 				{{- $searchZoneAzimuthWidth := 0 }}
 				{{- $searchZoneElevationWidth := 0 }}
-				{{- $major := 0 }}
-				{{- $minor := 0 }}
-				{{- $rowMajor := true }}
-
-				{{- if eq $widestPattern.type "cylinder" }}
-					{{- $major = 360 }}
-					{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
-					{{- $rowMajor = $widestPattern.rowMajor }}
-				{{- else if eq $widestPattern.type "pyramide" }}
-					{{- $major = (mul 2 $widestPattern.width)}}
-					{{- $minor = math.Round (mul $widestPattern.barHeight $widestPattern.barsCount) }}
-					{{- $rowMajor = $widestPattern.rowMajor }}
-				{{- else if eq $widestPattern.type "cone" }}
-					{{- $major = (mul 2 $widestPattern.width)}}
-					{{- $minor = $major }}
-				{{- end }}
-
-				{{- if $rowMajor }}
-					{{- $searchZoneAzimuthWidth = $major }}
-					{{- $searchZoneElevationWidth = $minor }}
-				{{- else }}
-					{{- $searchZoneAzimuthWidth = $minor }}
-					{{- $searchZoneElevationWidth = $major }}
+				{{- /* Dynamically select widest vertical scan pattern across all available patterns */}}
+				{{- if and $searchRadar $searchRadar.scanPatterns }}
+					{{- $.Scratch.Set "bestElevWidth" 0 }}
+					{{- $.Scratch.Set "bestAzWidth" 0 }}
+					{{- $.Scratch.Set "bestPattern" $widestPattern }}
+					{{- range $k, $pat := $searchRadar.scanPatterns }}
+						{{- $major := 0 }}
+						{{- $minor := 0 }}
+						{{- $rowMajor := true }}
+						{{- if eq $pat.type "cylinder" }}
+							{{- $major = 360 }}
+							{{- $minor = math.Round (mul $pat.barHeight $pat.barsCount) }}
+							{{- $rowMajor = $pat.rowMajor }}
+						{{- else if eq $pat.type "pyramide" }}
+							{{- $major = (mul 2 $pat.width) }}
+							{{- $minor = math.Round (mul $pat.barHeight $pat.barsCount) }}
+							{{- $rowMajor = $pat.rowMajor }}
+						{{- else if eq $pat.type "cone" }}
+							{{- $major = (mul 2 $pat.width) }}
+							{{- $minor = $major }}
+						{{- end }}
+						{{- $azW := (cond $rowMajor $major $minor) }}
+						{{- $elW := (cond $rowMajor $minor $major) }}
+						{{- if gt $elW ($.Scratch.Get "bestElevWidth") }}
+							{{- $.Scratch.Set "bestElevWidth" $elW }}
+							{{- $.Scratch.Set "bestAzWidth" $azW }}
+							{{- $.Scratch.Set "bestPattern" $pat }}
+						{{- end }}
+					{{- end }}
+					{{- $searchZoneAzimuthWidth = ($.Scratch.Get "bestAzWidth") }}
+					{{- $searchZoneElevationWidth = ($.Scratch.Get "bestElevWidth") }}
+					{{- $widestPattern = ($.Scratch.Get "bestPattern") }}
 				{{- end }}
 
 				{{- $searchRange := 0 }}
@@ -270,7 +238,8 @@ https://github.com/ImVexed/ThunderView/issues
 	// Generate points for the radar's cone of coverage
 	function generateRadarCoveragePoints(radar) {
 		const points = [];
-		const elevationRadians = radar.maxElevation * (Math.PI / 180);
+		const maxElevationDeg = Math.min(radar.maxElevation, 89);
+		const elevationRadians = maxElevationDeg * (Math.PI / 180);
 		const range = radar.maxRange;
 
 		// Calculate points along the arc representing the cone of coverage
