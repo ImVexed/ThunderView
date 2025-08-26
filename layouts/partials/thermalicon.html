@@ -3,6 +3,9 @@
 	{{- if eq (len (intersect .resolution (slice 500 300))) 2}}
 		{{- $gen = 1 }}
 	{{- end }}
+	{{- if eq (len (intersect .resolution (slice 640 512))) 2}}
+		{{- $gen = "1+" }}
+	{{- end }}
 	{{- if eq (len (intersect .resolution (slice 800 500))) 2}}
 		{{- $gen = 2 }}
 	{{- end }}
@@ -49,6 +52,9 @@
 {{- $opacity := 1 }}
 {{- if eq $gen 1}}
 	{{- $opacity = 0.5 }}
+{{- end }}
+{{- if eq $gen "1+"}}
+	{{- $opacity = 0.6 }}
 {{- end }}
 {{- if eq $gen 2}}
 	{{- $opacity = 0.7 }}
