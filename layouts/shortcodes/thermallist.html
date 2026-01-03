@@ -77,26 +77,89 @@
 			{{- if .val.modifications.night_vision_system_upgrade_nv_to_thermal }}
 				{{- $nvs = .val.modifications.night_vision_system_upgrade_nv_to_thermal }}
 			{{- end }}
-			{{- if $nvs.effects.nightVision.gunnerThermal }} <!-- Gunner  -->
-				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" ($nvs.effects.nightVision.gunnerThermal.resolution)) -}} </td>
-			{{- else if $nvs.effects.nightVision.gunnerIr }}
-				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" ($nvs.effects.nightVision.gunnerIr.resolution)) -}} </td>
-			{{- else }}
-				<td></td>
+			{{- /* Gunner */ -}}
+			{{- $gt := $nvs.effects.nightVision.gunnerThermal }}
+			{{- $gtRes := slice }}
+			{{- if $gt }}
+				{{- if strings.Contains (printf "%T" $gt) "[]" }}
+					{{- $gtRes = $gt }}
+				{{- else if isset $gt "resolution" }}
+					{{- $gtRes = $gt.resolution }}
+				{{- end }}
 			{{- end }}
-			{{- if $nvs.effects.nightVision.commanderViewThermal }} <!-- Commander  -->
-				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" ($nvs.effects.nightVision.commanderViewThermal.resolution)) -}} </td>
-			{{- else if $nvs.effects.nightVision.commanderViewIr }}
-				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" ($nvs.effects.nightVision.commanderViewIr.resolution)) -}} </td>
+			{{- if gt (len $gtRes) 0 }}
+				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" $gtRes) -}}</td>
 			{{- else }}
-				<td></td>
+				{{- $gi := $nvs.effects.nightVision.gunnerIr }}
+				{{- $giRes := slice }}
+				{{- if $gi }}
+					{{- if strings.Contains (printf "%T" $gi) "[]" }}
+						{{- $giRes = $gi }}
+					{{- else if isset $gi "resolution" }}
+						{{- $giRes = $gi.resolution }}
+					{{- end }}
+				{{- end }}
+				{{- if gt (len $giRes) 0 }}
+					<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" $giRes) -}}</td>
+				{{- else }}
+					<td></td>
+				{{- end }}
 			{{- end }}
-			{{- if $nvs.effects.nightVision.driverThermal }} <!-- Driver  -->
-				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" ($nvs.effects.nightVision.driverThermal.resolution)) -}} </td>
-			{{- else if $nvs.effects.nightVision.driverIr }}
-				<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" ($nvs.effects.nightVision.driverIr.resolution)) -}} </td>
+			{{- /* Commander */ -}}
+			{{- $ct := $nvs.effects.nightVision.commanderViewThermal }}
+			{{- $ctRes := slice }}
+			{{- if $ct }}
+				{{- if strings.Contains (printf "%T" $ct) "[]" }}
+					{{- $ctRes = $ct }}
+				{{- else if isset $ct "resolution" }}
+					{{- $ctRes = $ct.resolution }}
+				{{- end }}
+			{{- end }}
+			{{- if gt (len $ctRes) 0 }}
+				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" $ctRes) -}}</td>
 			{{- else }}
-				<td></td>
+				{{- $ci := $nvs.effects.nightVision.commanderViewIr }}
+				{{- $ciRes := slice }}
+				{{- if $ci }}
+					{{- if strings.Contains (printf "%T" $ci) "[]" }}
+						{{- $ciRes = $ci }}
+					{{- else if isset $ci "resolution" }}
+						{{- $ciRes = $ci.resolution }}
+					{{- end }}
+				{{- end }}
+				{{- if gt (len $ciRes) 0 }}
+					<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" $ciRes) -}}</td>
+				{{- else }}
+					<td></td>
+				{{- end }}
+			{{- end }}
+			{{- /* Driver */ -}}
+			{{- $dt := $nvs.effects.nightVision.driverThermal }}
+			{{- $dtRes := slice }}
+			{{- if $dt }}
+				{{- if strings.Contains (printf "%T" $dt) "[]" }}
+					{{- $dtRes = $dt }}
+				{{- else if isset $dt "resolution" }}
+					{{- $dtRes = $dt.resolution }}
+				{{- end }}
+			{{- end }}
+			{{- if gt (len $dtRes) 0 }}
+				<td>{{- partial "thermalicon.html" (dict "isThermal" true "resolution" $dtRes) -}}</td>
+			{{- else }}
+				{{- $di := $nvs.effects.nightVision.driverIr }}
+				{{- $diRes := slice }}
+				{{- if $di }}
+					{{- if strings.Contains (printf "%T" $di) "[]" }}
+						{{- $diRes = $di }}
+					{{- else if isset $di "resolution" }}
+						{{- $diRes = $di.resolution }}
+					{{- end }}
+				{{- end }}
+				{{- if gt (len $diRes) 0 }}
+					<td>{{- partial "thermalicon.html" (dict "isThermal" false "resolution" $diRes) -}}</td>
+				{{- else }}
+					<td></td>
+				{{- end }}
 			{{- end }}
 		</tr>
 	{{- end }}
