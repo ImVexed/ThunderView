@@ -25,6 +25,7 @@ jobs:
           mv War-Thunder-Datamine/aces.vromfs.bin_u/gamedata data/
           mv War-Thunder-Datamine/char.vromfs.bin_u/config data/
           cd data/
+          find . -type f -name '*.bin' -delete
           autoload zmv
           zmv -n '(**/)(*).blkx' '$1$2.json' | bash 
 

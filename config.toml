@@ -4,6 +4,7 @@ title = 'Thunder View'
 theme = ["risotto"]
 enableInlineShortcodes = true
 timeout = "90s"
+ignoreFiles = ['\.bin$']
 
 [mediaTypes]
   [mediaTypes.'application/json']

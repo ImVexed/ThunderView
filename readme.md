@@ -7,6 +7,7 @@ To seed data:
 > cp -r War-Thunder-Datamine/char.vromfs.bin_u/config data  
 > cp -r War-Thunder-Datamine/aces.vromfs.bin_u/gamedata data/  
 > cd data  
+> find . -type f -name '*.bin' -delete  
 > find . -name '*.blkx' -exec bash -c 'mv "$0" "${0%.blkx}.json"' {} \;  
 > cd ..  
 > hugo server  
